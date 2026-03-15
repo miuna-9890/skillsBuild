@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillsBuild+ Redesign Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #0f62fe;
+  --blue-light: #4589ff;
+  --blue-pale: #edf4ff;
+  --navy: #001141;
+  --navy-mid: #06244a;
+  --dark: #0a0e1a;
+  --accent: #00b4d8;
+  --green: #198038;
+  --green-light: #defbe6;
+  --yellow: #f1c21b;
+  --yellow-light: #fdf6d1;
+  --red: #da1e28;
+  --purple: #6929c4;
+  --surface: #ffffff;
+  --surface2: #f4f7fb;
+  --surface3: #e8edf5;
+  --border: #d0dbed;
+  --text: #0a1628;
+  --text2: #3d5a80;
+  --text3: #7a90ab;
+  --shadow: 0 4px 24px rgba(15,98,254,0.10);
+  --shadow-md: 0 8px 40px rgba(15,98,254,0.14);
+  --r: 16px;
+  --r-sm: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--surface2); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+h1,h2,h3,h4,h5 { font-family: 'Sora', sans-serif; line-height: 1.25; }
+button { font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; }
+input, textarea, select { font-family: 'DM Sans', sans-serif; }
+
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; animation: screenIn 0.45s cubic-bezier(0.22,1,0.36,1); }
+@keyframes screenIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+
+/* ═══════ NAV ═══════ */
+.topnav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 60px;
+  background: var(--navy);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: sticky; top: 0; z-index: 100; flex-shrink: 0;
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; }
+.nav-logo span.ibm { font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#fff; letter-spacing:-0.5px; }
+.nav-logo span.plus { color: var(--accent); }
+.nav-badge { font-size:10px; background:var(--accent); color:#fff; padding:2px 7px; border-radius:20px; font-weight:600; letter-spacing:0.5px; }
+.nav-right { display:flex; align-items:center; gap:16px; }
+.nav-avatar { width:36px; height:36px; border-radius:50%; background: linear-gradient(135deg,#4589ff,#00b4d8); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; color:#fff; }
+.nav-name { color:rgba(255,255,255,0.75); font-size:14px; }
+.nav-xp { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.08); border-radius:20px; padding:4px 12px; }
+.nav-xp span { font-size:13px; color:#f1c21b; font-weight:600; }
+
+/* ═══════════════════════════════════════
+   SCREEN 0 — LOGIN / SIGNUP
+═══════════════════════════════════════ */
+#s0 {
+  background: linear-gradient(160deg, #001141 0%, #06244a 50%, #0a1628 100%);
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+/* Grid pattern bg */
+#s0::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(15,98,254,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15,98,254,0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+#s0::after {
+  content: '';
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,180,216,0.12) 0%, transparent 70%);
+}
+.auth-wrap {
+  position: relative; z-index: 2;
+  display: flex; min-height: 100vh;
+}
+/* Left branding */
+.auth-left {
+  flex: 1;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 80px 64px;
+}
+.auth-logo { display:flex; align-items:center; gap:12px; margin-bottom:56px; }
+.auth-logo .logo-text { font-family:'Sora',sans-serif; font-weight:800; font-size:28px; color:#fff; }
+.auth-logo .logo-plus { color:var(--accent); }
+.auth-logo .logo-ibm-badge {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px; padding: 4px 10px;
+  font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7); letter-spacing: 1px;
+}
+.auth-headline {
+  font-family: 'Sora', sans-serif;
+  font-size: 48px; font-weight: 800;
+  color: #fff; line-height: 1.15;
+  margin-bottom: 20px;
+}
+.auth-headline span { color: var(--accent); }
+.auth-subhead { font-size: 17px; color: rgba(255,255,255,0.55); line-height: 1.7; margin-bottom: 48px; max-width: 420px; }
+.auth-features { display: flex; flex-direction: column; gap: 16px; }
+.auth-feat { display: flex; align-items: center; gap: 14px; }
+.auth-feat-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+}
+.auth-feat-text strong { display:block; font-size:14px; color:#fff; font-weight:600; margin-bottom:2px; }
+.auth-feat-text span { font-size:13px; color:rgba(255,255,255,0.45); }
+/* Right form panel */
+.auth-right {
+  width: 480px; flex-shrink: 0;
+  background: #fff;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 56px 48px;
+  box-shadow: -20px 0 60px rgba(0,0,0,0.3);
+}
+.auth-tabs { display:flex; gap:0; margin-bottom:36px; border-bottom:2px solid var(--border); }
+.auth-tab {
+  flex:1; text-align:center; padding:12px;
+  font-family:'Sora',sans-serif; font-size:15px; font-weight:700;
+  color:var(--text3); cursor:pointer; border-bottom:3px solid transparent;
+  margin-bottom:-2px; transition:all 0.2s;
+}
+.auth-tab.active { color:var(--blue); border-bottom-color:var(--blue); }
+.auth-form-title { font-family:'Sora',sans-serif; font-size:24px; font-weight:700; color:var(--text); margin-bottom:6px; }
+.auth-form-sub { font-size:14px; color:var(--text3); margin-bottom:28px; }
+
+/* Form elements */
+.form-group { margin-bottom:18px; }
+.form-group label { display:block; font-size:13px; font-weight:600; color:var(--text2); margin-bottom:6px; letter-spacing:0.3px; }
+.form-input {
+  width:100%; padding:13px 16px; border-radius:var(--r-sm);
+  border:1.5px solid var(--border); background:#fff;
+  font-size:15px; color:var(--text); outline:none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-input:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(15,98,254,0.1); }
+.form-input::placeholder { color:var(--text3); }
+.form-input-icon-wrap { position:relative; }
+.form-input-icon-wrap .form-input { padding-left:44px; }
+.form-input-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:18px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.form-divider { display:flex; align-items:center; gap:12px; margin:20px 0; }
+.form-divider::before, .form-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+.form-divider span { font-size:13px; color:var(--text3); white-space:nowrap; }
+.social-btn {
+  width:100%; padding:12px; border-radius:var(--r-sm);
+  border:1.5px solid var(--border); background:#fff;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  font-size:14px; font-weight:600; color:var(--text2); cursor:pointer;
+  transition:all 0.2s; margin-bottom:10px;
+}
+.social-btn:hover { border-color:var(--blue); color:var(--blue); background:var(--blue-pale); }
+.auth-cta {
+  width:100%; padding:15px; border-radius:var(--r-sm);
+  background: linear-gradient(135deg,#0f62fe,#0043ce);
+  color:#fff; font-size:16px; font-weight:700;
+  border:none; cursor:pointer; margin-top:6px;
+  font-family:'Sora',sans-serif;
+  box-shadow:0 4px 20px rgba(15,98,254,0.35);
+  transition:all 0.2s;
+}
+.auth-cta:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(15,98,254,0.45); }
+.auth-terms { font-size:12px; color:var(--text3); text-align:center; margin-top:16px; line-height:1.6; }
+.auth-terms a { color:var(--blue); text-decoration:none; }
+.form-forgot { text-align:right; }
+.form-forgot a { font-size:13px; color:var(--blue); text-decoration:none; }
+.check-row { display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+.check-row input { width:16px; height:16px; accent-color:var(--blue); }
+.check-row label { font-size:13px; color:var(--text2); margin:0; }
+.auth-switch { text-align:center; margin-top:20px; font-size:14px; color:var(--text3); }
+.auth-switch a { color:var(--blue); font-weight:600; text-decoration:none; }
+/* Floating stats */
+.auth-stat-pills { display:flex; gap:12px; flex-wrap:wrap; margin-top:48px; }
+.auth-stat-pill {
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+  border-radius:30px; padding:8px 16px;
+  display:flex; align-items:center; gap:8px;
+}
+.auth-stat-pill .sp-num { font-family:'Sora',sans-serif; font-size:16px; font-weight:800; color:#fff; }
+.auth-stat-pill .sp-label { font-size:12px; color:rgba(255,255,255,0.5); }
+
+/* ═══════════════════════════════════════
+   SCREEN 1 — ONBOARDING SURVEY
+═══════════════════════════════════════ */
+#s1 {
+  background: linear-gradient(160deg, #001141 0%, #06244a 45%, #0a1628 100%);
+  min-height: 100vh;
+}
+.onboard-wrap { display: flex; min-height: 100vh; }
+.onboard-left {
+  width: 360px; flex-shrink:0;
+  background: rgba(255,255,255,0.03);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  padding: 44px 32px;
+  display: flex; flex-direction: column;
+}
+.ob-logo { display:flex; align-items:center; gap:10px; margin-bottom:44px; }
+.ob-logo span.ibm { font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:#fff; }
+.ob-logo span.plus { color:#00b4d8; }
+.ob-welcome { color:rgba(255,255,255,0.5); font-size:12px; margin-bottom:8px; letter-spacing:0.8px; text-transform:uppercase; }
+.ob-title { font-family:'Sora',sans-serif; font-size:26px; font-weight:700; color:#fff; margin-bottom:14px; line-height:1.3; }
+.ob-sub { color:rgba(255,255,255,0.5); font-size:14px; line-height:1.6; margin-bottom:36px; }
+.ob-steps { display:flex; flex-direction:column; gap:0; }
+.ob-step { display:flex; align-items:flex-start; gap:14px; padding:13px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+.ob-step:last-child { border-bottom:none; }
+.step-num { width:30px; height:30px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.4); border:1px solid rgba(255,255,255,0.1); transition: all 0.3s; }
+.ob-step.done .step-num { background:#198038; color:#fff; border-color:#198038; }
+.ob-step.active .step-num { background:var(--blue); color:#fff; border-color:var(--blue); box-shadow:0 0 16px rgba(15,98,254,0.5); }
+.step-info { flex:1; }
+.step-label { font-size:11px; color:rgba(255,255,255,0.3); margin-bottom:2px; text-transform:uppercase; letter-spacing:0.5px; }
+.step-name { font-family:'Sora',sans-serif; font-size:14px; color:rgba(255,255,255,0.4); font-weight:600; }
+.ob-step.active .step-name { color:#fff; }
+.ob-step.done .step-name { color:rgba(255,255,255,0.55); }
+.ob-mascot-hint { margin-top:auto; background:rgba(0,180,216,0.1); border:1px solid rgba(0,180,216,0.2); border-radius:var(--r-sm); padding:14px; display:flex; gap:10px; align-items:flex-start; }
+.ob-mascot-hint p { font-size:13px; color:rgba(255,255,255,0.65); line-height:1.5; }
+
+.onboard-right { flex:1; padding:44px 52px; display:flex; flex-direction:column; overflow-y:auto; }
+.ob-progress { display:flex; align-items:center; gap:12px; margin-bottom:32px; }
+.ob-progress-bar { flex:1; height:5px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden; }
+.ob-progress-fill { height:100%; border-radius:3px; background: linear-gradient(90deg,#0f62fe,#00b4d8); transition: width 0.5s; }
+.ob-progress-text { font-size:13px; color:rgba(255,255,255,0.4); white-space:nowrap; }
+.q-block { margin-bottom:28px; }
+.q-block label { display:block; font-family:'Sora',sans-serif; font-size:17px; font-weight:600; color:#fff; margin-bottom:5px; }
+.q-block .q-hint { font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:14px; }
+.chip-grid { display:flex; flex-wrap:wrap; gap:9px; }
+.chip { padding:9px 16px; border-radius:40px; font-size:13px; font-weight:500; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.6); border:1.5px solid rgba(255,255,255,0.12); cursor:pointer; transition:all 0.2s; user-select:none; }
+.chip:hover { background:rgba(15,98,254,0.2); border-color:rgba(15,98,254,0.5); color:#fff; }
+.chip.selected { background:var(--blue); border-color:var(--blue); color:#fff; box-shadow:0 0 12px rgba(15,98,254,0.4); }
+.chip.selected::before { content:'✓ '; }
+.ob-select { width:100%; padding:13px 16px; border-radius:var(--r-sm); background:rgba(255,255,255,0.06); color:#fff; border:1.5px solid rgba(255,255,255,0.12); font-size:15px; appearance:none; cursor:pointer; transition: border-color 0.2s; }
+.ob-select:focus { outline:none; border-color:var(--blue); }
+.ob-select option { background:#06244a; }
+.ob-input { width:100%; padding:13px 16px; border-radius:var(--r-sm); background:rgba(255,255,255,0.06); color:#fff; border:1.5px solid rgba(255,255,255,0.12); font-size:15px; transition: border-color 0.2s; }
+.ob-input:focus { outline:none; border-color:var(--blue); }
+.ob-input::placeholder { color:rgba(255,255,255,0.3); }
+.slider-wrap { display:flex; flex-direction:column; gap:8px; }
+.ob-slider { width:100%; accent-color:var(--blue); }
+.slider-labels { display:flex; justify-content:space-between; font-size:13px; color:rgba(255,255,255,0.4); }
+.ob-nav-btns { display:flex; gap:12px; margin-top:auto; padding-top:24px; }
+.btn-back { padding:13px 24px; border-radius:var(--r-sm); font-size:14px; font-weight:600; background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.12); transition:all 0.2s; }
+.btn-back:hover { background:rgba(255,255,255,0.14); }
+.btn-next { flex:1; padding:13px 24px; border-radius:var(--r-sm); font-size:15px; font-weight:700; background: linear-gradient(135deg,#0f62fe,#0043ce); color:#fff; border:none; box-shadow: 0 4px 20px rgba(15,98,254,0.35); transition:all 0.2s; font-family:'Sora',sans-serif; }
+.btn-next:hover { transform:translateY(-2px); }
+
+/* ═══════════════════════════════════════
+   SCREEN 2 — PATHWAYS
+═══════════════════════════════════════ */
+#s2 { background:var(--surface2); }
+.s2-body { flex:1; padding:32px 40px; max-width:1200px; margin:0 auto; width:100%; }
+.mascot-banner { background: linear-gradient(135deg,#001141 0%,#06244a 100%); border-radius:20px; padding:32px 36px; display:flex; align-items:center; gap:32px; margin-bottom:32px; position:relative; overflow:hidden; }
+.mascot-banner::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at 80% 50%,rgba(0,180,216,0.15),transparent 60%); }
+.mascot-text { flex:1; position:relative; z-index:1; }
+.mascot-text h2 { font-size:22px; color:#fff; margin-bottom:8px; }
+.mascot-text p { color:rgba(255,255,255,0.65); font-size:14px; line-height:1.6; max-width:560px; }
+.mascot-text .user-name { color:#00b4d8; font-weight:600; }
+.mascot-ask { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:var(--r-sm); padding:11px 14px; display:flex; gap:10px; align-items:center; margin-top:14px; max-width:480px; }
+.mascot-ask input { flex:1; background:transparent; border:none; color:#fff; font-size:14px; outline:none; }
+.mascot-ask input::placeholder { color:rgba(255,255,255,0.35); }
+.ask-btn { background:var(--blue); color:#fff; border:none; border-radius:8px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; }
+.pathways-title { font-family:'Sora',sans-serif; font-size:19px; font-weight:700; color:var(--text); margin-bottom:5px; }
+.pathways-sub { color:var(--text2); font-size:14px; margin-bottom:22px; }
+.pathways-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:28px; }
+.pathway-card { background:#fff; border-radius:var(--r); border:2px solid var(--border); padding:24px; cursor:pointer; transition:all 0.25s; position:relative; overflow:hidden; }
+.pathway-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; border-radius:var(--r) var(--r) 0 0; }
+.pathway-card.blue::before { background: linear-gradient(90deg,#0f62fe,#4589ff); }
+.pathway-card.teal::before { background: linear-gradient(90deg,#009d9a,#00b4d8); }
+.pathway-card.purple::before { background: linear-gradient(90deg,#6929c4,#8a3ffc); }
+.pathway-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--blue); }
+.pathway-icon { font-size:34px; margin-bottom:12px; }
+.pathway-title { font-family:'Sora',sans-serif; font-size:16px; font-weight:700; color:var(--text); margin-bottom:5px; }
+.pathway-match { display:inline-flex; align-items:center; gap:5px; background:var(--blue-pale); color:var(--blue); border-radius:20px; padding:3px 10px; font-size:11px; font-weight:600; margin-bottom:10px; }
+.pathway-desc { font-size:13px; color:var(--text2); line-height:1.55; margin-bottom:14px; }
+.pathway-courses { font-size:12px; color:var(--text3); margin-bottom:10px; }
+.pathway-jobs { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px; }
+.job-tag { background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:3px 9px; font-size:11px; color:var(--text2); }
+.pathway-duration { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--text3); }
+.pathway-cta { width:100%; padding:10px; border-radius:var(--r-sm); font-size:13px; font-weight:700; background:var(--blue); color:#fff; border:none; cursor:pointer; font-family:'Sora',sans-serif; transition:all 0.2s; margin-top:12px; }
+/* ── OLD tour-section kept for compatibility ── */
+.tour-section { background:#fff; border-radius:var(--r); padding:24px; border:1px solid var(--border); }
+.tour-section h3 { font-size:17px; font-weight:700; color:var(--text); margin-bottom:5px; }
+.tour-section p { font-size:13px; color:var(--text2); margin-bottom:18px; }
+.tour-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.tour-step { background:var(--surface2); border-radius:var(--r-sm); padding:18px; border:1px solid var(--border); text-align:center; cursor:pointer; transition:all 0.2s; }
+.tour-step:hover { border-color:var(--blue); background:var(--blue-pale); }
+.tour-step-icon { font-size:26px; margin-bottom:9px; }
+.tour-step-title { font-family:'Sora',sans-serif; font-size:13px; font-weight:600; color:var(--text); margin-bottom:3px; }
+.tour-step-desc { font-size:12px; color:var(--text3); }
+
+/* ════════════════════════════════════════
+   ARIA INTERACTIVE TUTORIAL (S2)
+════════════════════════════════════════ */
+
+/* Layout: pathways on left, ARIA chat on right */
+.s2-inner { display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start; }
+
+/* ARIA Tutorial Panel */
+.aria-tutorial-panel {
+  position: sticky; top: 80px;
+  background: linear-gradient(160deg, #001a3d 0%, #062040 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(0,180,216,0.25);
+  overflow: hidden;
+  box-shadow: 0 12px 48px rgba(15,98,254,0.22);
+}
+
+/* Panel header */
+.atp-header {
+  background: rgba(0,0,0,0.25);
+  padding: 18px 20px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.atp-robot {
+  font-size: 38px;
+  animation: robotBob 2.5s ease-in-out infinite;
+  display: inline-block; flex-shrink: 0;
+}
+.atp-header-text {}
+.atp-title { font-family:'Sora',sans-serif; font-size:15px; font-weight:700; color:#fff; margin-bottom:2px; }
+.atp-subtitle { font-size:11px; color:rgba(255,255,255,0.45); }
+.atp-live-dot {
+  width:8px; height:8px; border-radius:50%; background:#24a148;
+  display:inline-block; margin-right:5px;
+  box-shadow: 0 0 6px #24a148;
+  animation: pulse-green 1.5s ease-in-out infinite;
+}
+@keyframes pulse-green { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* Step progress bar */
+.atp-progress-row {
+  padding: 14px 20px 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.atp-progress-bar {
+  flex:1; height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden;
+}
+.atp-progress-fill {
+  height:100%; background: linear-gradient(90deg,#0f62fe,#00b4d8);
+  border-radius:2px; transition: width 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.atp-step-count { font-size:11px; color:rgba(255,255,255,0.4); white-space:nowrap; }
+
+/* Step pills */
+.atp-step-pills {
+  display:flex; gap:6px; padding: 0 20px 14px; flex-wrap:wrap;
+}
+.atp-pill {
+  width:28px; height:6px; border-radius:3px;
+  background:rgba(255,255,255,0.12); transition:all 0.3s; cursor:pointer;
+}
+.atp-pill.done { background: #24a148; }
+.atp-pill.active { background: linear-gradient(90deg,#0f62fe,#00b4d8); box-shadow:0 0 8px rgba(15,98,254,0.5); }
+
+/* Chat messages area */
+.atp-messages {
+  padding: 0 20px 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  max-height: 320px; overflow-y: auto;
+}
+.atp-messages::-webkit-scrollbar { width:4px; }
+.atp-messages::-webkit-scrollbar-track { background:transparent; }
+.atp-messages::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:2px; }
+
+.atp-bubble {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px 14px 14px 14px;
+  padding: 12px 14px;
+  font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);
+  animation: bubbleIn 0.35s cubic-bezier(0.22,1,0.36,1);
+  display: none;
+}
+.atp-bubble.visible { display:block; }
+.atp-bubble.active-msg {
+  background: rgba(15,98,254,0.18);
+  border-color: rgba(15,98,254,0.35);
+}
+@keyframes bubbleIn {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.atp-bubble strong { color: #00b4d8; }
+.atp-bubble .highlight-tag {
+  display:inline-flex; align-items:center; gap:4px;
+  background:rgba(15,98,254,0.3); border:1px solid rgba(15,98,254,0.5);
+  border-radius:6px; padding:1px 8px; font-size:12px;
+  color:#7eb8ff; font-weight:600; margin: 0 2px;
+}
+
+/* Spotlight card — shows what's being highlighted */
+.atp-spotlight {
+  margin: 0 20px 14px;
+  background: rgba(15,98,254,0.12);
+  border: 1px solid rgba(15,98,254,0.3);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display:none;
+  animation: bubbleIn 0.3s ease;
+}
+.atp-spotlight.visible { display:flex; gap:10px; align-items:center; }
+.atp-spotlight-icon { font-size:28px; flex-shrink:0; }
+.atp-spotlight-text {}
+.atp-spotlight-label { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:rgba(0,180,216,0.8); margin-bottom:2px; }
+.atp-spotlight-name { font-family:'Sora',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:2px; }
+.atp-spotlight-desc { font-size:12px; color:rgba(255,255,255,0.55); line-height:1.5; }
+
+/* Navigation buttons */
+.atp-nav {
+  padding: 14px 20px;
+  display: flex; gap: 10px; align-items: center;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.atp-btn-skip {
+  font-size:12px; color:rgba(255,255,255,0.35); background:none; border:none; cursor:pointer;
+  padding:0; text-decoration:underline; flex-shrink:0;
+}
+.atp-btn-skip:hover { color:rgba(255,255,255,0.6); }
+.atp-btn-prev {
+  flex:1; padding:10px; border-radius:10px; font-size:13px; font-weight:600;
+  background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.7);
+  border:1px solid rgba(255,255,255,0.12); cursor:pointer; transition:all 0.2s;
+}
+.atp-btn-prev:hover { background:rgba(255,255,255,0.15); }
+.atp-btn-next {
+  flex:2; padding:10px 14px; border-radius:10px; font-size:13px; font-weight:700;
+  background:linear-gradient(135deg,#0f62fe,#0043ce); color:#fff; border:none;
+  cursor:pointer; font-family:'Sora',sans-serif;
+  box-shadow: 0 4px 16px rgba(15,98,254,0.35); transition:all 0.2s;
+}
+.atp-btn-next:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(15,98,254,0.45); }
+.atp-btn-done {
+  flex:1; padding:10px 14px; border-radius:10px; font-size:13px; font-weight:700;
+  background:linear-gradient(135deg,#198038,#0e6027); color:#fff; border:none;
+  cursor:pointer; font-family:'Sora',sans-serif;
+  box-shadow: 0 4px 16px rgba(25,128,56,0.35); transition:all 0.2s; display:none;
+}
+.atp-btn-done:hover { transform:translateY(-1px); }
+
+/* Ask ARIA input at bottom */
+.atp-ask-row {
+  padding: 12px 20px 16px;
+  display:flex; gap:8px;
+}
+.atp-ask-input {
+  flex:1; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.13);
+  border-radius:10px; padding:9px 12px; color:#fff; font-size:13px; outline:none;
+  transition: border-color 0.2s;
+}
+.atp-ask-input:focus { border-color:rgba(0,180,216,0.5); }
+.atp-ask-input::placeholder { color:rgba(255,255,255,0.3); }
+.atp-ask-send {
+  background:var(--accent); border:none; border-radius:10px; padding:9px 13px;
+  color:#001141; font-weight:700; font-size:13px; cursor:pointer; flex-shrink:0;
+}
+
+/* Highlight ring on tour targets */
+.tour-target {
+  position: relative; transition: all 0.3s;
+}
+.tour-target.highlighted::after {
+  content:'';
+  position:absolute; inset:-4px;
+  border-radius:calc(var(--r) + 4px);
+  border: 2px solid rgba(0,180,216,0.8);
+  box-shadow: 0 0 0 4px rgba(0,180,216,0.15), 0 0 20px rgba(0,180,216,0.2);
+  animation: ringPulse 1.5s ease-in-out infinite;
+  pointer-events:none; z-index:5;
+}
+@keyframes ringPulse {
+  0%,100%{ box-shadow: 0 0 0 4px rgba(0,180,216,0.15), 0 0 20px rgba(0,180,216,0.2); }
+  50%{ box-shadow: 0 0 0 8px rgba(0,180,216,0.08), 0 0 32px rgba(0,180,216,0.3); }
+}
+
+/* Tour complete banner */
+.tour-complete-banner {
+  display:none; margin-top:12px;
+  background: linear-gradient(135deg,rgba(25,128,56,0.2),rgba(25,128,56,0.1));
+  border:1px solid rgba(25,128,56,0.4);
+  border-radius:12px; padding:14px 16px;
+  text-align:center;
+}
+.tour-complete-banner.visible { display:block; animation: bubbleIn 0.4s ease; }
+.tour-complete-banner p { font-size:13px; color:rgba(255,255,255,0.75); line-height:1.6; }
+.tour-complete-banner strong { color:#4cca6e; }
+
+/* ═══════════════════════════════════════
+   SCREEN 3 — DASHBOARD
+═══════════════════════════════════════ */
+#s3 { background:var(--surface2); }
+.dash-layout { display:flex; flex:1; }
+.sidebar { width:230px; flex-shrink:0; background:#fff; border-right:1px solid var(--border); padding:20px 0; display:flex; flex-direction:column; }
+.sidebar-section { padding:0 14px; margin-bottom:20px; }
+.sidebar-label { font-size:10px; font-weight:700; color:var(--text3); letter-spacing:1px; text-transform:uppercase; padding:0 8px; margin-bottom:7px; }
+.sidebar-item { display:flex; align-items:center; gap:11px; padding:9px 11px; border-radius:var(--r-sm); font-size:13px; color:var(--text2); cursor:pointer; transition:all 0.18s; }
+.sidebar-item:hover { background:var(--surface2); color:var(--text); }
+.sidebar-item.active { background:var(--blue-pale); color:var(--blue); font-weight:600; }
+.sidebar-item .si-icon { font-size:17px; width:22px; }
+.sidebar-badge { margin-left:auto; background:var(--blue); color:#fff; border-radius:10px; padding:1px 6px; font-size:10px; font-weight:700; }
+.sidebar-bot { margin:auto 14px 0; background: linear-gradient(135deg,#001141,#06244a); border-radius:var(--r-sm); padding:14px; cursor:pointer; }
+.sidebar-bot-title { font-family:'Sora',sans-serif; font-size:12px; font-weight:700; color:#fff; margin-bottom:3px; }
+.sidebar-bot-sub { font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:10px; }
+.sidebar-bot-btn { width:100%; padding:7px; background:var(--accent); border:none; border-radius:7px; color:#001141; font-weight:700; font-size:12px; cursor:pointer; }
+.dash-main { flex:1; padding:28px 32px; overflow-y:auto; }
+.dash-greeting { margin-bottom:24px; }
+.dash-greeting h2 { font-size:24px; font-weight:700; color:var(--text); margin-bottom:3px; }
+.dash-greeting p { color:var(--text2); font-size:14px; }
+.dash-greeting .time-note { color:var(--blue); font-weight:600; }
+.stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+.stat-card { background:#fff; border-radius:var(--r); padding:18px; border:1px solid var(--border); }
+.stat-card .sc-label { font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:7px; }
+.stat-card .sc-val { font-family:'Sora',sans-serif; font-size:26px; font-weight:800; color:var(--text); margin-bottom:3px; }
+.stat-card .sc-sub { font-size:12px; color:var(--text2); }
+.stat-card .sc-icon { float:right; font-size:22px; margin-top:-2px; }
+.dash-grid { display:grid; grid-template-columns:2fr 1fr; gap:18px; }
+.dash-card { background:#fff; border-radius:var(--r); padding:22px; border:1px solid var(--border); margin-bottom:18px; }
+.dash-card h3 { font-family:'Sora',sans-serif; font-size:16px; font-weight:700; color:var(--text); margin-bottom:14px; }
+.continue-card { display:flex; gap:14px; align-items:center; padding:14px; background:var(--surface2); border-radius:var(--r-sm); border:1px solid var(--border); margin-bottom:10px; cursor:pointer; transition:all 0.2s; }
+.continue-card:hover { border-color:var(--blue); background:var(--blue-pale); }
+.cc-thumb { width:56px; height:56px; border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:24px; }
+.cc-thumb.blue { background: linear-gradient(135deg,#0f62fe22,#0f62fe44); }
+.cc-thumb.teal { background: linear-gradient(135deg,#009d9a22,#009d9a44); }
+.cc-info { flex:1; }
+.cc-course { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px; }
+.cc-title { font-family:'Sora',sans-serif; font-size:13px; font-weight:600; color:var(--text); margin-bottom:5px; }
+.cc-prog-bar { height:4px; background:var(--surface3); border-radius:3px; overflow:hidden; margin-bottom:3px; }
+.cc-prog-fill { height:100%; background:var(--blue); border-radius:3px; }
+.cc-prog-text { font-size:11px; color:var(--text3); }
+.cc-btn { padding:7px 14px; background:var(--blue); color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; }
+.rec-item { display:flex; gap:11px; align-items:center; padding:11px; border-radius:var(--r-sm); border:1px solid var(--border); margin-bottom:9px; cursor:pointer; transition: all 0.2s; }
+.rec-item:hover { border-color:var(--blue); background:var(--blue-pale); }
+.rec-icon { width:38px; height:38px; border-radius:8px; background:var(--blue-pale); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.rec-title { font-family:'Sora',sans-serif; font-size:13px; font-weight:600; color:var(--text); }
+.rec-meta { font-size:11px; color:var(--text3); }
+.mascot-panel { background: linear-gradient(160deg,#001141,#06244a); border-radius:var(--r); padding:18px; color:#fff; }
+.mp-header { display:flex; align-items:center; gap:11px; margin-bottom:14px; }
+.mp-header h3 { font-size:15px; font-weight:700; color:#fff; }
+.mp-chat { background:rgba(255,255,255,0.06); border-radius:var(--r-sm); padding:12px; font-size:13px; color:rgba(255,255,255,0.8); line-height:1.6; margin-bottom:11px; }
+.mp-chat strong { color:#00b4d8; }
+.mp-input-row { display:flex; gap:7px; }
+.mp-input { flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:9px 11px; color:#fff; font-size:13px; }
+.mp-input::placeholder { color:rgba(255,255,255,0.35); }
+.mp-send { background:var(--accent); border:none; border-radius:8px; padding:9px 13px; color:#001141; font-weight:700; font-size:12px; cursor:pointer; }
+.mp-suggestions { display:flex; flex-direction:column; gap:5px; margin-top:9px; }
+.mp-sug { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:7px; padding:7px 10px; font-size:12px; color:rgba(255,255,255,0.65); cursor:pointer; transition:all 0.2s; }
+.mp-sug:hover { background:rgba(15,98,254,0.3); color:#fff; }
+
+/* ═══════════════════════════════════════
+   SCREEN 4 — COURSE VIEW
+═══════════════════════════════════════ */
+#s4 { background:var(--surface2); }
+.course-layout { display:flex; flex:1; }
+.course-sidebar { width:260px; flex-shrink:0; background:#fff; border-right:1px solid var(--border); overflow-y:auto; }
+.cs-header { padding:18px; border-bottom:1px solid var(--border); }
+.cs-back { font-size:12px; color:var(--blue); cursor:pointer; margin-bottom:7px; display:flex; align-items:center; gap:3px; }
+.cs-course-title { font-family:'Sora',sans-serif; font-size:15px; font-weight:700; color:var(--text); }
+.cs-prog-row { display:flex; align-items:center; gap:9px; margin-top:10px; }
+.cs-prog-bar { flex:1; height:7px; background:var(--surface3); border-radius:4px; overflow:hidden; }
+.cs-prog-fill { height:100%; background: linear-gradient(90deg,#0f62fe,#00b4d8); border-radius:4px; }
+.cs-prog-pct { font-size:12px; font-weight:700; color:var(--blue); }
+.cs-modules { padding:10px 0; }
+.cs-module-header { display:flex; align-items:center; gap:9px; padding:11px 18px; cursor:pointer; transition:background 0.2s; }
+.cs-module-header:hover { background:var(--surface2); }
+.cs-mod-check { width:18px; height:18px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:9px; flex-shrink:0; }
+.cs-mod-check.done { background:var(--green); border-color:var(--green); color:#fff; }
+.cs-mod-check.active { border-color:var(--blue); }
+.cs-mod-name { font-size:13px; font-weight:600; color:var(--text); flex:1; }
+.cs-mod-time { font-size:11px; color:var(--text3); }
+.cs-lessons { padding:0 0 7px 46px; }
+.cs-lesson { display:flex; align-items:center; gap:7px; padding:7px 14px 7px 0; font-size:12px; color:var(--text2); cursor:pointer; border-radius:6px; transition:all 0.18s; }
+.cs-lesson:hover { color:var(--blue); }
+.cs-lesson.active { color:var(--blue); font-weight:600; }
+.cs-lesson.done { color:var(--green); }
+.cs-lesson-dot { width:7px; height:7px; border-radius:50%; background:var(--border); flex-shrink:0; }
+.cs-lesson.active .cs-lesson-dot { background:var(--blue); }
+.cs-lesson.done .cs-lesson-dot { background:var(--green); }
+.course-main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.course-content { flex:1; padding:28px 32px; overflow-y:auto; max-width:760px; }
+.course-breadcrumb { font-size:12px; color:var(--text3); margin-bottom:14px; }
+.course-breadcrumb span { color:var(--blue); }
+.course-h1 { font-family:'Sora',sans-serif; font-size:24px; font-weight:700; color:var(--text); margin-bottom:7px; }
+.course-meta-row { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+.course-meta-tag { background:var(--blue-pale); color:var(--blue); border-radius:20px; padding:3px 11px; font-size:11px; font-weight:600; }
+.course-meta-time { font-size:12px; color:var(--text3); }
+.video-placeholder { width:100%; aspect-ratio:16/9; border-radius:var(--r); background: linear-gradient(135deg,#001141,#06244a); display:flex; align-items:center; justify-content:center; margin-bottom:22px; position:relative; overflow:hidden; cursor:pointer; }
+.video-placeholder::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 50%,rgba(0,180,216,0.15),transparent 60%); }
+.play-btn { width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,0.2); backdrop-filter:blur(10px); border:2px solid rgba(255,255,255,0.4); display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer; }
+.video-label { position:absolute; bottom:14px; left:14px; color:rgba(255,255,255,0.7); font-size:13px; }
+.course-text h3 { font-family:'Sora',sans-serif; font-size:17px; font-weight:700; margin-bottom:9px; color:var(--text); }
+.course-text p { font-size:14px; color:var(--text2); line-height:1.75; margin-bottom:14px; }
+.course-text ul { padding-left:18px; color:var(--text2); font-size:14px; line-height:1.75; margin-bottom:14px; }
+.key-concept { background:var(--blue-pale); border-left:4px solid var(--blue); border-radius:0 var(--r-sm) var(--r-sm) 0; padding:14px 18px; margin-bottom:18px; }
+.key-concept strong { color:var(--blue); display:block; margin-bottom:4px; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; }
+.key-concept p { color:var(--text); font-size:13px; line-height:1.6; margin:0; }
+.course-nav-bar { padding:14px 32px; background:#fff; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+.course-nav-btn { padding:10px 22px; border-radius:var(--r-sm); font-size:13px; font-weight:700; font-family:'Sora',sans-serif; cursor:pointer; transition:all 0.2s; }
+.cnb-prev { background:transparent; color:var(--text2); border:1.5px solid var(--border); }
+.cnb-quiz { background: linear-gradient(135deg,#0f62fe,#0043ce); color:#fff; border:none; box-shadow:0 4px 16px rgba(15,98,254,0.3); }
+.ai-companion { width:270px; flex-shrink:0; background:#fff; border-left:1px solid var(--border); display:flex; flex-direction:column; }
+.aic-header { padding:18px; border-bottom:1px solid var(--border); background: linear-gradient(135deg,#001141,#06244a); text-align:center; }
+.aic-robot { font-size:44px; animation:robotBob 2.5s ease-in-out infinite; display:inline-block; }
+@keyframes robotBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+.aic-name { font-family:'Sora',sans-serif; font-size:15px; font-weight:700; color:#fff; margin-top:5px; }
+.aic-status { font-size:11px; color:rgba(255,255,255,0.5); }
+.aic-online { display:inline-block; width:6px; height:6px; background:#24a148; border-radius:50%; margin-right:3px; }
+.aic-messages { flex:1; padding:14px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
+.aic-msg { border-radius:var(--r-sm); padding:11px 13px; font-size:12px; line-height:1.55; }
+.aic-msg.bot { background:var(--blue-pale); color:var(--text); border-radius:4px var(--r-sm) var(--r-sm) var(--r-sm); }
+.aic-msg.user { background:var(--blue); color:#fff; border-radius:var(--r-sm) 4px var(--r-sm) var(--r-sm); align-self:flex-end; }
+.aic-input-area { padding:14px; border-top:1px solid var(--border); }
+.aic-input-row { display:flex; gap:7px; }
+.aic-input { flex:1; border:1.5px solid var(--border); border-radius:8px; padding:9px 11px; font-size:12px; color:var(--text); outline:none; }
+.aic-input:focus { border-color:var(--blue); }
+.aic-send { background:var(--blue); border:none; border-radius:8px; padding:9px 13px; color:#fff; font-weight:700; font-size:12px; cursor:pointer; }
+.aic-quick { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+.aic-q { background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:4px 9px; font-size:11px; color:var(--text2); cursor:pointer; transition:all 0.18s; }
+.aic-q:hover { border-color:var(--blue); color:var(--blue); }
+
+/* ═══════════════════════════════════════
+   SCREEN 5 — QUIZ CELEBRATION
+═══════════════════════════════════════ */
+#s5 {
+  background: linear-gradient(160deg,#001141 0%,#06244a 50%,#0a1628 100%);
+  align-items:center; justify-content:center;
+}
+.celebration { text-align:center; padding:44px; max-width:580px; }
+.confetti-emoji { font-size:60px; animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275); display:block; margin-bottom:14px; }
+@keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+.cel-robot { font-size:72px; animation:robotBob 2s ease-in-out infinite; display:inline-block; margin-bottom:14px; }
+.cel-title { font-family:'Sora',sans-serif; font-size:34px; font-weight:800; color:#fff; margin-bottom:10px; }
+.cel-sub { font-size:16px; color:rgba(255,255,255,0.65); margin-bottom:28px; line-height:1.6; }
+.cel-score { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:var(--r); padding:24px; margin-bottom:24px; display:flex; align-items:center; justify-content:center; gap:28px; }
+.score-circle { width:90px; height:90px; border-radius:50%; background: conic-gradient(#24a148 0% 80%, rgba(255,255,255,0.1) 80%); display:flex; align-items:center; justify-content:center; }
+.score-inner { width:72px; height:72px; border-radius:50%; background: linear-gradient(135deg,#001141,#06244a); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.score-num { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:#fff; }
+.score-denom { font-size:10px; color:rgba(255,255,255,0.5); }
+.score-stats { display:flex; flex-direction:column; gap:10px; }
+.score-stat { display:flex; align-items:center; gap:9px; }
+.ss-icon { font-size:18px; }
+.ss-label { color:rgba(255,255,255,0.6); font-size:13px; }
+.ss-val { font-weight:700; color:#fff; font-size:14px; margin-left:auto; }
+.cel-msg { background:rgba(0,180,216,0.1); border:1px solid rgba(0,180,216,0.25); border-radius:var(--r-sm); padding:14px 18px; margin-bottom:24px; text-align:left; display:flex; gap:12px; }
+.cel-msg p { font-size:13px; color:rgba(255,255,255,0.75); line-height:1.6; }
+.xp-gained { display:inline-flex; align-items:center; gap:7px; background:rgba(241,194,27,0.15); border:1px solid rgba(241,194,27,0.3); border-radius:20px; padding:7px 18px; font-size:14px; font-weight:700; color:#f1c21b; margin-bottom:22px; }
+.cel-btns { display:flex; gap:11px; justify-content:center; }
+.cel-btn-sec { padding:12px 24px; border-radius:var(--r-sm); font-size:14px; font-weight:600; background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.15); cursor:pointer; font-family:'Sora',sans-serif; }
+.cel-btn-primary { padding:12px 28px; border-radius:var(--r-sm); font-size:14px; font-weight:700; background: linear-gradient(135deg,#0f62fe,#0043ce); color:#fff; border:none; box-shadow:0 4px 20px rgba(15,98,254,0.4); cursor:pointer; font-family:'Sora',sans-serif; }
+
+/* ═══════════════════════════════════════
+   SCREEN 6 — JOB BOARD
+═══════════════════════════════════════ */
+#s6 { background:var(--surface2); }
+.jobs-body { flex:1; padding:32px 36px; max-width:1080px; margin:0 auto; width:100%; }
+.jobs-header { margin-bottom:24px; }
+.jobs-header h2 { font-family:'Sora',sans-serif; font-size:24px; font-weight:700; color:var(--text); margin-bottom:5px; }
+.jobs-header p { color:var(--text2); font-size:14px; }
+.jobs-badge { display:inline-flex; align-items:center; gap:5px; background:var(--green-light); color:var(--green); border-radius:20px; padding:3px 11px; font-size:12px; font-weight:600; margin-top:7px; }
+.filter-bar { display:flex; gap:9px; align-items:center; margin-bottom:20px; flex-wrap:wrap; }
+.filter-input { flex:1; min-width:180px; padding:10px 14px; border-radius:var(--r-sm); border:1.5px solid var(--border); background:#fff; font-size:13px; color:var(--text); outline:none; }
+.filter-input:focus { border-color:var(--blue); }
+.filter-select { padding:10px 12px; border-radius:var(--r-sm); border:1.5px solid var(--border); background:#fff; font-size:13px; color:var(--text); outline:none; }
+.filter-btn-active { padding:10px 16px; border-radius:var(--r-sm); font-size:13px; font-weight:600; background:var(--blue); color:#fff; border:none; cursor:pointer; }
+.jobs-grid { display:grid; grid-template-columns:2fr 1fr; gap:20px; align-items:start; }
+.jobs-list { display:flex; flex-direction:column; gap:12px; }
+.job-card { background:#fff; border-radius:var(--r); border:1.5px solid var(--border); padding:20px; cursor:pointer; transition:all 0.22s; position:relative; }
+.job-card:hover { border-color:var(--blue); box-shadow:var(--shadow); transform:translateY(-2px); }
+.job-card.featured { border-color:var(--blue); }
+.job-featured-tag { position:absolute; top:14px; right:14px; background:var(--blue-pale); color:var(--blue); border-radius:20px; padding:2px 9px; font-size:10px; font-weight:700; }
+.job-top { display:flex; gap:12px; align-items:flex-start; margin-bottom:10px; }
+.job-logo { width:44px; height:44px; border-radius:9px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; background:#fff; }
+.job-info { flex:1; }
+.job-title { font-family:'Sora',sans-serif; font-size:15px; font-weight:700; color:var(--text); margin-bottom:2px; }
+.job-company { font-size:13px; color:var(--text2); margin-bottom:3px; }
+.job-loc { font-size:12px; color:var(--text3); }
+.job-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+.jtag { border-radius:20px; padding:3px 10px; font-size:11px; font-weight:500; }
+.jtag-type { background:var(--blue-pale); color:var(--blue); }
+.jtag-skill { background:var(--surface2); color:var(--text2); border:1px solid var(--border); }
+.jtag-match { background:var(--green-light); color:var(--green); }
+.job-bottom { display:flex; align-items:center; justify-content:space-between; }
+.job-salary { font-family:'Sora',sans-serif; font-size:14px; font-weight:700; color:var(--text); }
+.job-posted { font-size:11px; color:var(--text3); }
+.job-apply { padding:7px 16px; border-radius:var(--r-sm); font-size:12px; font-weight:700; background:var(--blue); color:#fff; border:none; cursor:pointer; }
+.job-source { display:flex; align-items:center; gap:4px; font-size:10px; color:var(--text3); margin-top:8px; }
+.source-badge { background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:1px 5px; font-size:10px; font-weight:600; color:var(--text3); }
+.jobs-sidebar-panel { display:flex; flex-direction:column; gap:14px; position:sticky; top:20px; }
+.jsp-card { background:#fff; border-radius:var(--r); border:1px solid var(--border); padding:20px; }
+.jsp-card h3 { font-family:'Sora',sans-serif; font-size:15px; font-weight:700; color:var(--text); margin-bottom:12px; }
+.skill-match-item { display:flex; align-items:center; gap:9px; margin-bottom:10px; }
+.smi-label { font-size:13px; color:var(--text); flex:1; }
+.smi-bar { flex:2; height:6px; background:var(--surface3); border-radius:4px; overflow:hidden; }
+.smi-fill { height:100%; border-radius:4px; background: linear-gradient(90deg,#0f62fe,#00b4d8); }
+.smi-pct { font-size:12px; font-weight:700; color:var(--blue); min-width:34px; text-align:right; }
+.alert-item { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--border); }
+.alert-item:last-child { border-bottom:none; }
+.alert-label { font-size:13px; color:var(--text); }
+.alert-toggle { width:38px; height:20px; border-radius:10px; background:var(--blue); position:relative; cursor:pointer; }
+.alert-toggle::after { content:''; position:absolute; top:3px; right:3px; width:14px; height:14px; border-radius:50%; background:#fff; }
+.jobs-mascot { background: linear-gradient(135deg,#001141,#06244a); border-radius:var(--r); padding:18px; text-align:center; }
+.jobs-mascot .jm-robot { font-size:40px; display:block; margin-bottom:7px; }
+.jobs-mascot p { font-size:12px; color:rgba(255,255,255,0.65); line-height:1.6; }
+.jm-tip { font-size:11px; color:rgba(0,180,216,0.9); margin-top:7px; font-style:italic; }
+
+/* PROTO BAR */
+.proto-bar { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(10,14,26,0.96); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.12); border-radius:40px; padding:9px 18px; display:flex; align-items:center; gap:7px; z-index:9999; box-shadow:0 8px 40px rgba(0,0,0,0.4); }
+.proto-bar-label { font-size:10px; color:rgba(255,255,255,0.4); letter-spacing:0.5px; padding-right:8px; border-right:1px solid rgba(255,255,255,0.1); }
+.proto-btn { padding:6px 12px; border-radius:24px; font-size:11px; font-weight:700; background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.12); cursor:pointer; transition:all 0.18s; white-space:nowrap; }
+.proto-btn:hover { background:rgba(255,255,255,0.18); color:#fff; }
+.proto-btn.current { background:var(--blue); color:#fff; border-color:var(--blue); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN 0 — LOGIN / SIGN UP
+═══════════════════════════════════════════════════ -->
+<div id="s0" class="screen active">
+  <div class="auth-wrap">
+    <!-- Left branding -->
+    <div class="auth-left">
+      <div class="auth-logo">
+        <div>
+          <span class="logo-text">SkillsBuild</span><span class="logo-text logo-plus">+</span>
+        </div>
+        <span class="logo-ibm-badge">IBM</span>
+      </div>
+      <h1 class="auth-headline">Learn. Grow.<br><span>Get Hired.</span></h1>
+      <p class="auth-subhead">IBM SkillsBuild+ is your AI-powered learning companion — built specifically for students in Singapore and beyond. Free courses, real certifications, real jobs.</p>
+      <div class="auth-features">
+        <div class="auth-feat">
+          <div class="auth-feat-icon">🤖</div>
+          <div class="auth-feat-text">
+            <strong>AI-Personalised Pathways</strong>
+            <span>ARIA tailors your entire learning journey to your goals</span>
+          </div>
+        </div>
+        <div class="auth-feat">
+          <div class="auth-feat-icon">🏆</div>
+          <div class="auth-feat-text">
+            <strong>IBM-Recognised Certifications</strong>
+            <span>Earn badges and certificates employers actually recognise</span>
+          </div>
+        </div>
+        <div class="auth-feat">
+          <div class="auth-feat-icon">💼</div>
+          <div class="auth-feat-text">
+            <strong>Live Job Matching</strong>
+            <span>See real jobs from LinkedIn & MyCareersFuture matched to your skills</span>
+          </div>
+        </div>
+        <div class="auth-feat">
+          <div class="auth-feat-icon">🆓</div>
+          <div class="auth-feat-text">
+            <strong>100% Free for Students</strong>
+            <span>No credit card. No hidden fees. Just learning.</span>
+          </div>
+        </div>
+      </div>
+      <div class="auth-stat-pills">
+        <div class="auth-stat-pill"><span class="sp-num">500+</span><span class="sp-label">Free Courses</span></div>
+        <div class="auth-stat-pill"><span class="sp-num">2M+</span><span class="sp-label">Learners</span></div>
+        <div class="auth-stat-pill"><span class="sp-num">85%</span><span class="sp-label">Get hired faster</span></div>
+      </div>
+    </div>
+
+    <!-- Right form -->
+    <div class="auth-right">
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-signup" onclick="switchTab('signup')">Create Account</div>
+        <div class="auth-tab" id="tab-login" onclick="switchTab('login')">Log In</div>
+      </div>
+
+      <!-- SIGN UP FORM -->
+      <div id="form-signup">
+        <div class="auth-form-title">Join SkillsBuild+ for free</div>
+        <div class="auth-form-sub">Start your personalised tech learning journey today.</div>
+
+        <div class="social-btn">
+          <span>🔵</span> Continue with Google
+        </div>
+        <div class="social-btn">
+          <span>🔗</span> Continue with LinkedIn
+        </div>
+
+        <div class="form-divider"><span>or sign up with email</span></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input class="form-input" type="text" placeholder="Alex" value="Alex">
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input class="form-input" type="text" placeholder="Tan" value="Tan">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <div class="form-input-icon-wrap">
+            <span class="form-input-icon">✉️</span>
+            <input class="form-input" type="email" placeholder="alex@student.sp.edu.sg" value="alex@student.sp.edu.sg">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="form-input-icon-wrap">
+            <span class="form-input-icon">🔒</span>
+            <input class="form-input" type="password" placeholder="Create a strong password" value="••••••••••">
+          </div>
+        </div>
+        <div class="check-row" style="margin-bottom:16px">
+          <input type="checkbox" id="terms" checked>
+          <label for="terms">I agree to the <a href="#" style="color:var(--blue)">Terms of Service</a> and <a href="#" style="color:var(--blue)">Privacy Policy</a></label>
+        </div>
+        <button class="auth-cta" onclick="goScreen('s1')">Create My Free Account →</button>
+        <div class="auth-terms">By signing up, you'll be guided through a quick personalisation survey so ARIA can build your perfect learning pathway.</div>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="form-login" style="display:none">
+        <div class="auth-form-title">Welcome back!</div>
+        <div class="auth-form-sub">Log in to continue your learning journey.</div>
+
+        <div class="social-btn"><span>🔵</span> Continue with Google</div>
+        <div class="social-btn"><span>🔗</span> Continue with LinkedIn</div>
+        <div class="form-divider"><span>or log in with email</span></div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <div class="form-input-icon-wrap">
+            <span class="form-input-icon">✉️</span>
+            <input class="form-input" type="email" placeholder="your@email.com">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="form-input-icon-wrap">
+            <span class="form-input-icon">🔒</span>
+            <input class="form-input" type="password" placeholder="Your password">
+          </div>
+          <div class="form-forgot" style="margin-top:6px"><a href="#">Forgot password?</a></div>
+        </div>
+        <div class="check-row" style="margin-bottom:16px">
+          <input type="checkbox" id="remember" checked>
+          <label for="remember">Keep me logged in</label>
+        </div>
+        <button class="auth-cta" onclick="goScreen('s3')">Log In →</button>
+        <div class="auth-switch">Don't have an account? <a href="#" onclick="switchTab('signup')">Sign up free</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN 1 — ONBOARDING SURVEY
+═══════════════════════════════════════════════════ -->
+<div id="s1" class="screen">
+  <div class="onboard-wrap">
+    <div class="onboard-left">
+      <div class="ob-logo"><span class="ibm">SkillsBuild</span><span class="plus">+</span></div>
+      <div class="ob-welcome">Welcome aboard</div>
+      <h1 class="ob-title">Let's personalise your learning journey 🎯</h1>
+      <p class="ob-sub">Answer a few quick questions so ARIA can build your perfect pathway. Takes about 2 minutes.</p>
+      <div class="ob-steps">
+        <div class="ob-step done"><div class="step-num">✓</div><div class="step-info"><div class="step-label">Step 1</div><div class="step-name">Account Created</div></div></div>
+        <div class="ob-step active" id="step2"><div class="step-num">2</div><div class="step-info"><div class="step-label">Step 2</div><div class="step-name">Your Interests</div></div></div>
+        <div class="ob-step" id="step3"><div class="step-num">3</div><div class="step-info"><div class="step-label">Step 3</div><div class="step-name">Career Goals</div></div></div>
+        <div class="ob-step" id="step4"><div class="step-num">4</div><div class="step-info"><div class="step-label">Step 4</div><div class="step-name">Learning Style</div></div></div>
+        <div class="ob-step" id="step5"><div class="step-num">5</div><div class="step-info"><div class="step-label">Step 5</div><div class="step-name">Your Pathways</div></div></div>
+      </div>
+      <div class="ob-mascot-hint">
+        <div style="font-size:26px">🤖</div>
+        <p><strong style="color:#00b4d8">Hi! I'm ARIA</strong> — your AI learning buddy. I'll use your answers to find the best courses and jobs for you!</p>
+      </div>
+    </div>
+    <div class="onboard-right">
+      <!-- Page 1 -->
+      <div id="ob-page-1">
+        <div class="ob-progress"><div class="ob-progress-bar"><div class="ob-progress-fill" style="width:20%"></div></div><div class="ob-progress-text">Step 2 of 5</div></div>
+        <div class="q-block">
+          <label>What field of technology excites you most? 🚀</label>
+          <div class="q-hint">Pick all that interest you — no wrong answers!</div>
+          <div class="chip-grid">
+            <div class="chip selected" onclick="toggleChip(this)">💻 Software Development</div>
+            <div class="chip" onclick="toggleChip(this)">🤖 Artificial Intelligence</div>
+            <div class="chip" onclick="toggleChip(this)">☁️ Cloud Computing</div>
+            <div class="chip" onclick="toggleChip(this)">🔒 Cybersecurity</div>
+            <div class="chip" onclick="toggleChip(this)">📊 Data & Analytics</div>
+            <div class="chip" onclick="toggleChip(this)">🎨 UX / Product Design</div>
+            <div class="chip" onclick="toggleChip(this)">📱 Mobile Development</div>
+            <div class="chip" onclick="toggleChip(this)">🌐 Web Development</div>
+            <div class="chip" onclick="toggleChip(this)">⚙️ DevOps & Infrastructure</div>
+            <div class="chip" onclick="toggleChip(this)">📡 IoT & Embedded Systems</div>
+            <div class="chip" onclick="toggleChip(this)">🧬 Quantum Computing</div>
+            <div class="chip" onclick="toggleChip(this)">🤝 IT Project Management</div>
+          </div>
+        </div>
+        <div class="q-block">
+          <label>What type of work environment appeals to you? 🏢</label>
+          <div class="q-hint">Choose one that resonates most.</div>
+          <div class="chip-grid">
+            <div class="chip selected" onclick="toggleChip(this)">🏙️ Large Tech Company</div>
+            <div class="chip" onclick="toggleChip(this)">🚀 Startup / SME</div>
+            <div class="chip" onclick="toggleChip(this)">🏛️ Government / Public Sector</div>
+            <div class="chip" onclick="toggleChip(this)">🌍 Remote / Freelance</div>
+            <div class="chip" onclick="toggleChip(this)">🔬 Research / Academia</div>
+            <div class="chip" onclick="toggleChip(this)">🏦 Finance / Banking Tech</div>
+          </div>
+        </div>
+        <div class="q-block">
+          <label>What best describes your current level? 📈</label>
+          <select class="ob-select">
+            <option>🌱 Complete Beginner — new to tech</option>
+            <option selected>📘 Some Knowledge — familiar with basics</option>
+            <option>⚡ Intermediate — built a few projects</option>
+            <option>🎓 Advanced — working professional</option>
+          </select>
+        </div>
+        <div class="ob-nav-btns">
+          <button class="btn-next" onclick="goOBPage(2)">Continue — Career Goals →</button>
+        </div>
+      </div>
+      <!-- Page 2 -->
+      <div id="ob-page-2" style="display:none">
+        <div class="ob-progress"><div class="ob-progress-bar"><div class="ob-progress-fill" style="width:40%"></div></div><div class="ob-progress-text">Step 3 of 5</div></div>
+        <div class="q-block">
+          <label>What jobs are you hoping to pursue? 💼</label>
+          <div class="q-hint">Select all that appeal to you.</div>
+          <div class="chip-grid">
+            <div class="chip selected" onclick="toggleChip(this)">🖥️ Software Engineer</div>
+            <div class="chip" onclick="toggleChip(this)">🧠 AI / ML Engineer</div>
+            <div class="chip" onclick="toggleChip(this)">📊 Data Scientist</div>
+            <div class="chip" onclick="toggleChip(this)">☁️ Cloud Architect</div>
+            <div class="chip" onclick="toggleChip(this)">🔒 Security Analyst</div>
+            <div class="chip" onclick="toggleChip(this)">🎨 UX Designer</div>
+            <div class="chip" onclick="toggleChip(this)">📦 DevOps Engineer</div>
+            <div class="chip selected" onclick="toggleChip(this)">📱 Full-Stack Developer</div>
+            <div class="chip" onclick="toggleChip(this)">🛠️ IT Consultant</div>
+            <div class="chip" onclick="toggleChip(this)">🚀 Product Manager</div>
+          </div>
+        </div>
+        <div class="q-block">
+          <label>When do you plan to start working? ⏰</label>
+          <div class="chip-grid">
+            <div class="chip" onclick="toggleChip(this)">📅 After graduation (1–2 yrs)</div>
+            <div class="chip selected" onclick="toggleChip(this)">🔜 As soon as possible</div>
+            <div class="chip" onclick="toggleChip(this)">🌐 Part-time / internship now</div>
+            <div class="chip" onclick="toggleChip(this)">🚀 Already working, upskilling</div>
+          </div>
+        </div>
+        <div class="q-block">
+          <label>What's your salary expectation? (S$) 💰</label>
+          <div class="chip-grid">
+            <div class="chip" onclick="toggleChip(this)">$2,000–$3,500 (Entry)</div>
+            <div class="chip selected" onclick="toggleChip(this)">$3,500–$5,500 (Mid)</div>
+            <div class="chip" onclick="toggleChip(this)">$5,500–$8,000 (Senior)</div>
+            <div class="chip" onclick="toggleChip(this)">$8,000+ (Lead)</div>
+          </div>
+        </div>
+        <div class="q-block">
+          <label>Any dream companies? 🌟</label>
+          <div class="q-hint">Optional — helps us tailor your pathway.</div>
+          <input class="ob-input" placeholder="e.g. Google, GovTech, DBS Bank, Grab, Sea Limited...">
+        </div>
+        <div class="ob-nav-btns">
+          <button class="btn-back" onclick="goOBPage(1)">← Back</button>
+          <button class="btn-next" onclick="goOBPage(3)">Continue — Learning Style →</button>
+        </div>
+      </div>
+      <!-- Page 3 -->
+      <div id="ob-page-3" style="display:none">
+        <div class="ob-progress"><div class="ob-progress-bar"><div class="ob-progress-fill" style="width:60%"></div></div><div class="ob-progress-text">Step 4 of 5</div></div>
+        <div class="q-block">
+          <label>How much time can you commit per week? ⏱️</label>
+          <div class="slider-wrap">
+            <input type="range" class="ob-slider" min="1" max="5" value="3">
+            <div class="slider-labels"><span>1 hr/week</span><span>3 hrs/week</span><span>5+ hrs/week</span></div>
+          </div>
+        </div>
+        <div class="q-block">
+          <label>How do you learn best? 🧠</label>
+          <div class="chip-grid">
+            <div class="chip selected" onclick="toggleChip(this)">📺 Video Lectures</div>
+            <div class="chip" onclick="toggleChip(this)">📖 Reading & Articles</div>
+            <div class="chip selected" onclick="toggleChip(this)">🛠️ Hands-on Projects</div>
+            <div class="chip" onclick="toggleChip(this)">🧩 Quizzes & Challenges</div>
+            <div class="chip" onclick="toggleChip(this)">👥 Study Groups</div>
+            <div class="chip" onclick="toggleChip(this)">🎮 Gamified Learning</div>
+          </div>
+        </div>
+        <div class="q-block">
+          <label>Which school are you from? 🎓</label>
+          <div class="q-hint">Type your school or institution name.</div>
+          <input class="ob-input" type="text" placeholder="e.g. Singapore Polytechnic, NUS, Temasek Poly, ITE College East..." value="Singapore Polytechnic">
+        </div>
+        <div class="q-block">
+          <label>Do you have any existing certifications? 📜</label>
+          <div class="chip-grid">
+            <div class="chip selected" onclick="toggleChip(this)">None yet</div>
+            <div class="chip" onclick="toggleChip(this)">AWS Cloud Practitioner</div>
+            <div class="chip" onclick="toggleChip(this)">Google IT Support</div>
+            <div class="chip" onclick="toggleChip(this)">IBM Data Science</div>
+            <div class="chip" onclick="toggleChip(this)">CompTIA A+</div>
+            <div class="chip" onclick="toggleChip(this)">Other</div>
+          </div>
+        </div>
+        <div class="q-block">
+          <label>What's your biggest barrier to learning? 🚧</label>
+          <div class="chip-grid">
+            <div class="chip" onclick="toggleChip(this)">⏰ Not enough time</div>
+            <div class="chip selected" onclick="toggleChip(this)">😕 Don't know where to start</div>
+            <div class="chip" onclick="toggleChip(this)">📉 Content is too hard</div>
+            <div class="chip" onclick="toggleChip(this)">😴 Lose motivation easily</div>
+            <div class="chip" onclick="toggleChip(this)">💸 Cost concerns</div>
+          </div>
+        </div>
+        <div class="ob-nav-btns">
+          <button class="btn-back" onclick="goOBPage(2)">← Back</button>
+          <button class="btn-next" onclick="goScreen('s2')">✨ Build My Pathway →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN 2 — PATHWAYS
+═══════════════════════════════════════════════════ -->
+<div id="s2" class="screen">
+  <nav class="topnav" id="s2-nav">
+    <div class="nav-logo"><span class="ibm">SkillsBuild</span><span class="plus">+</span> <span class="nav-badge">ARIA AI</span></div>
+    <div class="nav-right">
+      <div class="nav-xp"><span>⭐ 50 XP</span></div>
+      <span class="nav-name">Alex Tan</span>
+      <div class="nav-avatar">AT</div>
+    </div>
+  </nav>
+  <div class="s2-body">
+
+    <!-- Welcome banner -->
+    <div class="mascot-banner tour-target" id="tour-welcome">
+      <div style="font-size:68px;animation:robotBob 2.5s ease-in-out infinite;flex-shrink:0">🤖</div>
+      <div class="mascot-text">
+        <h2>Hi <span class="user-name">Alex</span>! I'm ARIA — your AI Learning Assistant 🤖</h2>
+        <p>Based on your interests in <strong style="color:#00b4d8">Software Development</strong> and <strong style="color:#00b4d8">Full-Stack Development</strong>, I've curated <strong style="color:#fff">3 personalised learning pathways</strong> just for you. Let me also walk you through the platform so you know exactly where everything is!</p>
+      </div>
+    </div>
+
+    <!-- Two-column: pathways left, ARIA tutorial right -->
+    <div class="s2-inner">
+
+      <!-- LEFT: Pathways -->
+      <div>
+        <div class="pathways-title">🎯 Your Recommended Pathways</div>
+        <div class="pathways-sub">Tailored to your interests, career goals, and learning style. Click any pathway to begin.</div>
+
+        <div style="display:flex; flex-direction:column; gap:16px;">
+
+          <!-- Pathway 1 -->
+          <div class="pathway-card blue tour-target" id="tour-pathway" style="display:grid;grid-template-columns:auto 1fr;gap:0;padding:0;overflow:hidden;">
+            <div style="width:6px;background:linear-gradient(180deg,#0f62fe,#4589ff);flex-shrink:0;"></div>
+            <div style="padding:22px 22px 18px;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                <span style="font-size:30px">💻</span>
+                <div>
+                  <div class="pathway-match" style="margin-bottom:4px;">⭐ 96% Match</div>
+                  <div class="pathway-title">Full-Stack Developer</div>
+                </div>
+              </div>
+              <div class="pathway-desc">Build web apps from front to back. Master HTML, CSS, JavaScript, React, Node.js, databases and cloud deployment.</div>
+              <div class="pathway-courses">📚 12 courses · 🏆 2 IBM Certs · ⏱ ~4 months</div>
+              <div style="font-size:11px;color:var(--text3);margin:10px 0 6px;font-weight:600">💼 JOBS YOU CAN GET:</div>
+              <div class="pathway-jobs" style="margin-bottom:12px;"><span class="job-tag">Frontend Developer</span><span class="job-tag">Full-Stack Engineer</span><span class="job-tag">Web Developer</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div class="pathway-duration">📈 Avg: <strong style="color:var(--text)">S$4,800–S$8,500/mo</strong></div>
+                <button class="pathway-cta" style="width:auto;padding:9px 18px;" onclick="goScreen('s3')">Start Pathway →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pathway 2 -->
+          <div class="pathway-card teal" style="display:grid;grid-template-columns:auto 1fr;gap:0;padding:0;overflow:hidden;">
+            <div style="width:6px;background:linear-gradient(180deg,#009d9a,#00b4d8);flex-shrink:0;"></div>
+            <div style="padding:22px 22px 18px;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                <span style="font-size:30px">🤖</span>
+                <div>
+                  <div class="pathway-match" style="margin-bottom:4px;">⭐ 88% Match</div>
+                  <div class="pathway-title">AI & Data Science</div>
+                </div>
+              </div>
+              <div class="pathway-desc">Dive into machine learning, Python, data visualisation, and AI model building with real-world datasets.</div>
+              <div class="pathway-courses">📚 14 courses · 🏆 3 IBM Certs · ⏱ ~5 months</div>
+              <div style="font-size:11px;color:var(--text3);margin:10px 0 6px;font-weight:600">💼 JOBS YOU CAN GET:</div>
+              <div class="pathway-jobs" style="margin-bottom:12px;"><span class="job-tag">Data Analyst</span><span class="job-tag">AI Engineer</span><span class="job-tag">ML Engineer</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div class="pathway-duration">📈 Avg: <strong style="color:var(--text)">S$5,500–S$10,000/mo</strong></div>
+                <button class="pathway-cta" style="width:auto;padding:9px 18px;background:linear-gradient(135deg,#009d9a,#00b4d8)" onclick="goScreen('s3')">Start Pathway →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pathway 3 -->
+          <div class="pathway-card purple" style="display:grid;grid-template-columns:auto 1fr;gap:0;padding:0;overflow:hidden;">
+            <div style="width:6px;background:linear-gradient(180deg,#6929c4,#8a3ffc);flex-shrink:0;"></div>
+            <div style="padding:22px 22px 18px;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                <span style="font-size:30px">☁️</span>
+                <div>
+                  <div class="pathway-match" style="margin-bottom:4px;">⭐ 82% Match</div>
+                  <div class="pathway-title">Cloud & DevOps</div>
+                </div>
+              </div>
+              <div class="pathway-desc">Deploy and manage apps on AWS, Azure and IBM Cloud. Master Docker, Kubernetes, and CI/CD pipelines.</div>
+              <div class="pathway-courses">📚 10 courses · 🏆 2 IBM Certs · ⏱ ~3.5 months</div>
+              <div style="font-size:11px;color:var(--text3);margin:10px 0 6px;font-weight:600">💼 JOBS YOU CAN GET:</div>
+              <div class="pathway-jobs" style="margin-bottom:12px;"><span class="job-tag">Cloud Engineer</span><span class="job-tag">DevOps Engineer</span><span class="job-tag">Platform Eng</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div class="pathway-duration">📈 Avg: <strong style="color:var(--text)">S$5,000–S$9,000/mo</strong></div>
+                <button class="pathway-cta" style="width:auto;padding:9px 18px;background:linear-gradient(135deg,#6929c4,#8a3ffc)" onclick="goScreen('s3')">Start Pathway →</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end pathway list -->
+
+        <!-- Platform section previews (tour targets) -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;">
+
+          <div class="tour-target" id="tour-dashboard" style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:18px;cursor:pointer;transition:all 0.2s;" onclick="goScreen('s3')">
+            <div style="font-size:28px;margin-bottom:8px;">🏠</div>
+            <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">Dashboard</div>
+            <div style="font-size:12px;color:var(--text3);line-height:1.5;">Your learning home — see your progress, streaks, XP, and continue where you left off.</div>
+          </div>
+
+          <div class="tour-target" id="tour-courses" style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:18px;cursor:pointer;transition:all 0.2s;" onclick="goScreen('s4')">
+            <div style="font-size:28px;margin-bottom:8px;">📚</div>
+            <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">Courses</div>
+            <div style="font-size:12px;color:var(--text3);line-height:1.5;">500+ IBM-certified courses. ARIA guides you through each lesson in real time.</div>
+          </div>
+
+          <div class="tour-target" id="tour-badges" style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:18px;cursor:pointer;transition:all 0.2s;">
+            <div style="font-size:28px;margin-bottom:8px;">🏆</div>
+            <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">Badges & Certs</div>
+            <div style="font-size:12px;color:var(--text3);line-height:1.5;">Earn IBM digital badges after each course — shareable directly to LinkedIn.</div>
+          </div>
+
+          <div class="tour-target" id="tour-jobs" style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:18px;cursor:pointer;transition:all 0.2s;" onclick="goScreen('s6')">
+            <div style="font-size:28px;margin-bottom:8px;">💼</div>
+            <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">Job Board</div>
+            <div style="font-size:12px;color:var(--text3);line-height:1.5;">Live job listings from LinkedIn & MyCareersFuture matched to your skill level.</div>
+          </div>
+
+        </div>
+
+      </div><!-- end left col -->
+
+      <!-- RIGHT: ARIA Tutorial Panel -->
+      <div class="aria-tutorial-panel" id="ariaTutorialPanel">
+
+        <!-- Header -->
+        <div class="atp-header">
+          <div class="atp-robot">🤖</div>
+          <div class="atp-header-text">
+            <div class="atp-title">ARIA's Platform Tour</div>
+            <div class="atp-subtitle"><span class="atp-live-dot"></span>Walking you through everything</div>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="atp-progress-row">
+          <div class="atp-progress-bar"><div class="atp-progress-fill" id="atpFill" style="width:14%"></div></div>
+          <div class="atp-step-count" id="atpCount">Step 1 of 7</div>
+        </div>
+        <div class="atp-step-pills" id="atpPills"></div>
+
+        <!-- Spotlight card -->
+        <div class="atp-spotlight" id="atpSpotlight">
+          <div class="atp-spotlight-icon" id="atpSpotlightIcon">🏠</div>
+          <div class="atp-spotlight-text">
+            <div class="atp-spotlight-label" id="atpSpotlightLabel">Now showing</div>
+            <div class="atp-spotlight-name" id="atpSpotlightName">Dashboard</div>
+            <div class="atp-spotlight-desc" id="atpSpotlightDesc">Your learning home base</div>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="atp-messages" id="atpMessages"></div>
+
+        <!-- Tour complete banner -->
+        <div class="tour-complete-banner" id="atpComplete" style="margin:0 20px 14px;">
+          <p>🎉 <strong>Tour complete!</strong> You now know your way around SkillsBuild+. Pick a pathway above to start learning — I'll be right here whenever you need me!</p>
+        </div>
+
+        <!-- Nav buttons -->
+        <div class="atp-nav">
+          <button class="atp-btn-skip" onclick="skipTour()">Skip tour</button>
+          <button class="atp-btn-prev" id="atpPrev" onclick="tourPrev()" style="display:none">← Back</button>
+          <button class="atp-btn-next" id="atpNext" onclick="tourNext()">Next →</button>
+          <button class="atp-btn-done" id="atpDone" onclick="goScreen('s3')">Go to Dashboard 🏠</button>
+        </div>
+
+        <!-- Ask ARIA -->
+        <div class="atp-ask-row">
+          <input class="atp-ask-input" placeholder="Ask ARIA a question…" id="atpAskInput" onkeydown="if(event.key==='Enter')atpAsk()">
+          <button class="atp-ask-send" onclick="atpAsk()">→</button>
+        </div>
+
+      </div><!-- end ARIA panel -->
+
+    </div><!-- end s2-inner -->
+  </div><!-- end s2-body -->
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN 3 — DASHBOARD
+═══════════════════════════════════════════════════ -->
+<div id="s3" class="screen">
+  <nav class="topnav">
+    <div class="nav-logo"><span class="ibm">SkillsBuild</span><span class="plus">+</span></div>
+    <div class="nav-right"><div class="nav-xp"><span>⭐ 340 XP</span></div><span class="nav-name">Alex Tan</span><div class="nav-avatar">AT</div></div>
+  </nav>
+  <div class="dash-layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Main</div>
+        <div class="sidebar-item active"><span class="si-icon">🏠</span> Dashboard</div>
+        <div class="sidebar-item" onclick="goScreen('s4')"><span class="si-icon">📚</span> My Courses <span class="sidebar-badge">3</span></div>
+        <div class="sidebar-item"><span class="si-icon">🗺️</span> My Pathway</div>
+        <div class="sidebar-item"><span class="si-icon">🏆</span> Achievements</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Explore</div>
+        <div class="sidebar-item"><span class="si-icon">🔍</span> Browse Courses</div>
+        <div class="sidebar-item"><span class="si-icon">🤖</span> Ask ARIA</div>
+        <div class="sidebar-item" onclick="goScreen('s6')"><span class="si-icon">💼</span> Job Board <span class="sidebar-badge" style="background:var(--green)">24</span></div>
+        <div class="sidebar-item"><span class="si-icon">👥</span> Community</div>
+      </div>
+      <div class="sidebar-bot">
+        <div style="font-size:26px;text-align:center;margin-bottom:7px">🤖</div>
+        <div class="sidebar-bot-title">Ask ARIA</div>
+        <div class="sidebar-bot-sub">Get instant answers, career tips and course help</div>
+        <button class="sidebar-bot-btn">Chat Now →</button>
+      </div>
+    </div>
+    <div class="dash-main">
+      <div class="dash-greeting">
+        <h2>Good afternoon, Alex! ☀️</h2>
+        <p>You're on a <strong class="time-note">5-day streak</strong> 🔥 Keep it going — 2 lessons away from your next badge!</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-icon">📚</div><div class="sc-label">Courses Enrolled</div><div class="sc-val">3</div><div class="sc-sub">Full-Stack pathway</div></div>
+        <div class="stat-card"><div class="sc-icon">⭐</div><div class="sc-label">XP Points</div><div class="sc-val">340</div><div class="sc-sub">+80 this week</div></div>
+        <div class="stat-card"><div class="sc-icon">🏆</div><div class="sc-label">Badges Earned</div><div class="sc-val">4</div><div class="sc-sub">1 pending</div></div>
+        <div class="stat-card"><div class="sc-icon">🔥</div><div class="sc-label">Day Streak</div><div class="sc-val">5</div><div class="sc-sub">Personal best!</div></div>
+      </div>
+      <div class="dash-grid">
+        <div>
+          <div class="dash-card">
+            <h3>📚 Continue Learning</h3>
+            <div class="continue-card" onclick="goScreen('s4')">
+              <div class="cc-thumb blue">💻</div>
+              <div class="cc-info">
+                <div class="cc-course">Full-Stack Pathway · Module 2</div>
+                <div class="cc-title">JavaScript Fundamentals & ES6+</div>
+                <div class="cc-prog-bar"><div class="cc-prog-fill" style="width:65%"></div></div>
+                <div class="cc-prog-text">65% complete · 3 lessons left</div>
+              </div>
+              <button class="cc-btn">Resume →</button>
+            </div>
+            <div class="continue-card">
+              <div class="cc-thumb teal">🌐</div>
+              <div class="cc-info">
+                <div class="cc-course">Full-Stack Pathway · Module 1</div>
+                <div class="cc-title">HTML5 & CSS3 Fundamentals</div>
+                <div class="cc-prog-bar"><div class="cc-prog-fill" style="width:100%"></div></div>
+                <div class="cc-prog-text">✅ Completed · Badge Earned</div>
+              </div>
+              <button class="cc-btn" style="background:var(--green)">Done ✓</button>
+            </div>
+          </div>
+          <div class="dash-card">
+            <h3>✨ Recommended for You</h3>
+            <div class="rec-item"><div class="rec-icon">⚛️</div><div><div class="rec-title">React.js — Build Modern Web Apps</div><div class="rec-meta">18 lessons · Intermediate · IBM Certified</div></div></div>
+            <div class="rec-item"><div class="rec-icon">🗄️</div><div><div class="rec-title">SQL & Database Design Essentials</div><div class="rec-meta">12 lessons · Beginner · IBM Certified</div></div></div>
+            <div class="rec-item"><div class="rec-icon">🐍</div><div><div class="rec-title">Python for Web Development</div><div class="rec-meta">20 lessons · Intermediate · IBM Certified</div></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="mascot-panel">
+            <div class="mp-header"><div style="font-size:34px;animation:robotBob 2.5s ease-in-out infinite">🤖</div><div><h3>Ask ARIA</h3><div style="font-size:11px;color:rgba(255,255,255,0.5)">● Always online</div></div></div>
+            <div class="mp-chat"><strong>ARIA:</strong> Hey Alex! 👋 You're doing great — 65% through JavaScript! Want me to explain a concept, or shall I quiz you?</div>
+            <div class="mp-input-row"><input class="mp-input" placeholder="Ask me anything…"><button class="mp-send">→</button></div>
+            <div class="mp-suggestions">
+              <div class="mp-sug">💡 Explain closures in JavaScript</div>
+              <div class="mp-sug">📊 What jobs can I get after this?</div>
+              <div class="mp-sug">🏆 What badge do I earn next?</div>
+            </div>
+          </div>
+          <div class="dash-card" style="margin-top:16px">
+            <h3>💼 Job Matches</h3>
+            <div class="rec-item" onclick="goScreen('s6')"><div class="rec-icon">🏢</div><div><div class="rec-title">Junior Web Developer — GovTech</div><div class="rec-meta">S$3,500–4,200 · Singapore · 78% match</div></div></div>
+            <div class="rec-item" onclick="goScreen('s6')"><div class="rec-icon">🚀</div><div><div class="rec-title">Frontend Developer — Grab</div><div class="rec-meta">S$4,500–6,000 · Hybrid · 71% match</div></div></div>
+            <button onclick="goScreen('s6')" style="width:100%;padding:9px;border-radius:8px;background:var(--blue-pale);color:var(--blue);border:none;font-weight:700;cursor:pointer;font-size:13px;margin-top:6px">View All 24 Matches →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN 4 — COURSE VIEW
+═══════════════════════════════════════════════════ -->
+<div id="s4" class="screen">
+  <nav class="topnav">
+    <div class="nav-logo"><span class="ibm">SkillsBuild</span><span class="plus">+</span></div>
+    <div class="nav-right"><div class="nav-xp"><span>⭐ 340 XP</span></div><span class="nav-name">Alex Tan</span><div class="nav-avatar">AT</div></div>
+  </nav>
+  <div class="course-layout">
+    <div class="course-sidebar">
+      <div class="cs-header">
+        <div class="cs-back" onclick="goScreen('s3')">← Dashboard</div>
+        <div class="cs-course-title">JavaScript Fundamentals & ES6+</div>
+        <div class="cs-prog-row"><div class="cs-prog-bar"><div class="cs-prog-fill" style="width:65%"></div></div><div class="cs-prog-pct">65%</div></div>
+      </div>
+      <div class="cs-modules">
+        <div class="cs-module"><div class="cs-module-header"><div class="cs-mod-check done">✓</div><div class="cs-mod-name">1. Intro to JavaScript</div><div class="cs-mod-time">Done</div></div></div>
+        <div class="cs-module">
+          <div class="cs-module-header"><div class="cs-mod-check active"></div><div class="cs-mod-name">2. Functions & Scope</div><div class="cs-mod-time">30 min</div></div>
+          <div class="cs-lessons">
+            <div class="cs-lesson done"><div class="cs-lesson-dot"></div>2.1 Declaring Functions</div>
+            <div class="cs-lesson done"><div class="cs-lesson-dot"></div>2.2 Arrow Functions</div>
+            <div class="cs-lesson active"><div class="cs-lesson-dot"></div>2.3 Closures & Scope ← Now</div>
+            <div class="cs-lesson"><div class="cs-lesson-dot"></div>2.4 Higher-Order Functions</div>
+            <div class="cs-lesson"><div class="cs-lesson-dot"></div>🧩 Quiz — Functions</div>
+          </div>
+        </div>
+        <div class="cs-module"><div class="cs-module-header"><div class="cs-mod-check"></div><div class="cs-mod-name">3. ES6+ Modern Features</div><div class="cs-mod-time">45 min</div></div></div>
+        <div class="cs-module"><div class="cs-module-header"><div class="cs-mod-check"></div><div class="cs-mod-name">4. Async JavaScript</div><div class="cs-mod-time">40 min</div></div></div>
+        <div class="cs-module"><div class="cs-module-header"><div class="cs-mod-check"></div><div class="cs-mod-name">5. DOM Manipulation</div><div class="cs-mod-time">35 min</div></div></div>
+      </div>
+    </div>
+    <div class="course-main">
+      <div class="course-content">
+        <div class="course-breadcrumb">JavaScript Fundamentals > Module 2 > <span>2.3 Closures & Scope</span></div>
+        <h1 class="course-h1">Understanding Closures & Scope in JavaScript</h1>
+        <div class="course-meta-row">
+          <div class="course-meta-tag">📘 Intermediate</div>
+          <div class="course-meta-time">⏱ ~12 min</div>
+          <div class="course-meta-tag" style="background:var(--green-light);color:var(--green)">🏆 +20 XP</div>
+        </div>
+        <div class="video-placeholder"><div class="play-btn">▶</div><div class="video-label">📹 Video Lesson · 8:42</div></div>
+        <div class="course-text">
+          <h3>What is Scope?</h3>
+          <p>Scope in JavaScript determines where variables can be accessed or referenced. Think of scope as the set of rules that controls how variables are looked up in your code.</p>
+          <p>JavaScript has three types of scope:</p>
+          <ul>
+            <li><strong>Global scope</strong> — accessible from anywhere in the program</li>
+            <li><strong>Function scope</strong> — accessible only inside the function they're declared in</li>
+            <li><strong>Block scope</strong> — variables declared with <code>let</code> or <code>const</code> inside <code>{}</code></li>
+          </ul>
+          <div class="key-concept">
+            <strong>💡 KEY CONCEPT</strong>
+            <p>A <strong>closure</strong> is created when a function remembers and accesses variables from its outer scope, even after that outer function has finished executing.</p>
+          </div>
+          <h3>Why Do Closures Matter?</h3>
+          <p>Closures allow you to create private variables and factory functions, and are fundamental to understanding how React hooks work under the hood.</p>
+        </div>
+      </div>
+      <div class="course-nav-bar">
+        <button class="course-nav-btn cnb-prev">← Previous Lesson</button>
+        <div style="font-size:13px;color:var(--text3)">Lesson 3 of 5 in Module 2</div>
+        <button class="course-nav-btn cnb-quiz" onclick="goScreen('s5')">Complete & Take Quiz 🧩</button>
+      </div>
+    </div>
+    <div class="ai-companion">
+      <div class="aic-header">
+        <div class="aic-robot">🤖</div>
+        <div class="aic-name">ARIA</div>
+        <div class="aic-status"><span class="aic-online"></span>Learning with you</div>
+      </div>
+      <div class="aic-messages">
+        <div class="aic-msg bot">👋 Hey Alex! Ready for closures? This trips a lot of people up at first — but once it clicks, it's super powerful!</div>
+        <div class="aic-msg bot">📌 <strong>Tip:</strong> Think of closures like a backpack 🎒 — a function carries variables from its surrounding scope wherever it goes.</div>
+        <div class="aic-msg user">Can you show me an example?</div>
+        <div class="aic-msg bot">Sure! Classic closure example:<br><br><code style="font-size:11px;background:rgba(15,98,254,0.1);padding:6px;display:block;border-radius:5px;margin-top:3px">function counter() {<br>&nbsp; let count = 0;<br>&nbsp; return () => ++count;<br>}</code><br>The inner function "closes over" the count variable! 💡</div>
+        <div class="aic-msg bot">🚀 You're amazing! At this pace, you'll finish by <strong>next Friday!</strong></div>
+      </div>
+      <div class="aic-input-area">
+        <div class="aic-input-row"><input class="aic-input" placeholder="Ask ARIA about this lesson…"><button class="aic-send">→</button></div>
+        <div class="aic-quick">
+          <div class="aic-q">Explain simpler</div>
+          <div class="aic-q">Give example</div>
+          <div class="aic-q">Quiz me!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN 5 — QUIZ CELEBRATION
+═══════════════════════════════════════════════════ -->
+<div id="s5" class="screen">
+  <nav class="topnav" style="position:relative;z-index:10;"><div class="nav-logo"><span class="ibm">SkillsBuild</span><span class="plus">+</span></div><div class="nav-right"><div class="nav-xp"><span>⭐ 360 XP</span></div><span class="nav-name">Alex Tan</span><div class="nav-avatar">AT</div></div></nav>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,#001141 0%,#06244a 50%,#0a1628 100%)">
+    <div class="celebration">
+      <span class="confetti-emoji">🎉</span>
+      <div class="cel-robot">🤖</div>
+      <h1 class="cel-title">Amazing work, Alex!</h1>
+      <p class="cel-sub">You just aced the <strong style="color:#00b4d8">Functions & Scope</strong> quiz! ARIA is so proud — closures are one of the trickiest concepts in JavaScript and you nailed it! 🙌</p>
+      <div class="cel-score">
+        <div class="score-circle"><div class="score-inner"><div class="score-num">8/10</div><div class="score-denom">80%</div></div></div>
+        <div class="score-stats">
+          <div class="score-stat"><span class="ss-icon">✅</span><span class="ss-label">Correct Answers</span><span class="ss-val">8 / 10</span></div>
+          <div class="score-stat"><span class="ss-icon">⏱</span><span class="ss-label">Time Taken</span><span class="ss-val">4m 23s</span></div>
+          <div class="score-stat"><span class="ss-icon">📈</span><span class="ss-label">Your Best</span><span class="ss-val">↑ Improved!</span></div>
+        </div>
+      </div>
+      <div class="cel-msg">
+        <span style="font-size:26px">🤖</span>
+        <p><strong style="color:#00b4d8">ARIA says:</strong> "You missed Q3 and Q7 — both about lexical scope. This is super common! I've saved a mini-review. Want to go through those 2 together before moving on?"</p>
+      </div>
+      <div class="xp-gained">⭐ +20 XP Earned! · 🔥 Streak Extended to 6 days!</div>
+      <div class="cel-btns">
+        <button class="cel-btn-sec" onclick="goScreen('s4')">Review Wrong Answers</button>
+        <button class="cel-btn-primary" onclick="goScreen('s6')">Next Lesson → or see Job Matches 💼</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN 6 — JOB BOARD
+═══════════════════════════════════════════════════ -->
+<div id="s6" class="screen">
+  <nav class="topnav"><div class="nav-logo"><span class="ibm">SkillsBuild</span><span class="plus">+</span></div><div class="nav-right"><div class="nav-xp"><span>⭐ 360 XP</span></div><span class="nav-name">Alex Tan</span><div class="nav-avatar">AT</div></div></nav>
+  <div class="jobs-body">
+    <div class="jobs-header">
+      <h2>💼 Your Matched Job Opportunities</h2>
+      <p>Real-time listings from LinkedIn, MyCareersFuture & Glassdoor — matched to your SkillsBuild+ progress</p>
+      <div class="jobs-badge">✅ 24 jobs match your current skills · Updated 2 hours ago</div>
+    </div>
+    <div class="filter-bar">
+      <input class="filter-input" placeholder="🔍 Search jobs, companies, skills…">
+      <select class="filter-select"><option>📍 All Locations</option><option>Singapore (Central)</option><option>Remote / Hybrid</option></select>
+      <select class="filter-select"><option>💼 All Types</option><option>Full-time</option><option>Internship</option></select>
+      <select class="filter-select"><option>💰 Any Salary</option><option>S$3,000+</option><option>S$4,500+</option></select>
+      <button class="filter-btn-active">Apply Filters</button>
+    </div>
+    <div class="jobs-grid">
+      <div class="jobs-list">
+        <div class="job-card featured">
+          <div class="job-featured-tag">⭐ Top Match</div>
+          <div class="job-top"><div class="job-logo">🏛️</div><div class="job-info"><div class="job-title">Junior Software Developer</div><div class="job-company">GovTech Singapore</div><div class="job-loc">📍 Mapletree Business City · Hybrid</div></div></div>
+          <div class="job-tags"><span class="jtag jtag-type">Full-time</span><span class="jtag jtag-match">🎯 92% match</span><span class="jtag jtag-skill">JavaScript</span><span class="jtag jtag-skill">React</span><span class="jtag jtag-skill">Node.js</span></div>
+          <div class="job-bottom"><div><div class="job-salary">S$3,800 – S$4,500 / month</div><div class="job-posted">Posted 1 day ago</div></div><button class="job-apply">Apply Now →</button></div>
+          <div class="job-source">Source: <span class="source-badge">LinkedIn</span> · 142 applicants</div>
+        </div>
+        <div class="job-card">
+          <div class="job-top"><div class="job-logo">🚀</div><div class="job-info"><div class="job-title">Frontend Engineer (Internship)</div><div class="job-company">Grab Holdings</div><div class="job-loc">📍 One-North, Singapore · On-site</div></div></div>
+          <div class="job-tags"><span class="jtag jtag-type">Internship</span><span class="jtag jtag-match">🎯 85% match</span><span class="jtag jtag-skill">React</span><span class="jtag jtag-skill">TypeScript</span></div>
+          <div class="job-bottom"><div><div class="job-salary">S$1,500 – S$2,000 / month</div><div class="job-posted">Posted 3 days ago</div></div><button class="job-apply">Apply Now →</button></div>
+          <div class="job-source">Source: <span class="source-badge">MyCareersFuture</span> · 89 applicants</div>
+        </div>
+        <div class="job-card">
+          <div class="job-top"><div class="job-logo">🏦</div><div class="job-info"><div class="job-title">Associate Software Engineer</div><div class="job-company">DBS Bank Technology</div><div class="job-loc">📍 Marina Bay Financial Centre · Hybrid</div></div></div>
+          <div class="job-tags"><span class="jtag jtag-type">Full-time</span><span class="jtag jtag-match">🎯 78% match</span><span class="jtag jtag-skill">JavaScript</span><span class="jtag jtag-skill">Python</span><span class="jtag jtag-skill">SQL</span></div>
+          <div class="job-bottom"><div><div class="job-salary">S$4,200 – S$5,500 / month</div><div class="job-posted">Posted 5 days ago</div></div><button class="job-apply">Apply Now →</button></div>
+          <div class="job-source">Source: <span class="source-badge">LinkedIn</span> · 234 applicants</div>
+        </div>
+        <div class="job-card">
+          <div class="job-top"><div class="job-logo">🌊</div><div class="job-info"><div class="job-title">Web Developer</div><div class="job-company">Sea Limited (Shopee)</div><div class="job-loc">📍 Science Park Drive · Hybrid</div></div></div>
+          <div class="job-tags"><span class="jtag jtag-type">Full-time</span><span class="jtag jtag-match">🎯 74% match</span><span class="jtag jtag-skill">Vue.js</span><span class="jtag jtag-skill">REST APIs</span></div>
+          <div class="job-bottom"><div><div class="job-salary">S$4,500 – S$6,000 / month</div><div class="job-posted">Posted 1 week ago</div></div><button class="job-apply">Apply Now →</button></div>
+          <div class="job-source">Source: <span class="source-badge">Glassdoor</span> · 178 applicants</div>
+        </div>
+        <div style="background:#fff;border-radius:var(--r);border:2px dashed var(--border);padding:22px;text-align:center">
+          <div style="font-size:30px;margin-bottom:9px">🔒</div>
+          <div style="font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px">Unlock 20 More Job Matches</div>
+          <div style="font-size:13px;color:var(--text2);margin-bottom:14px">Complete <strong>Module 3 — ES6+ Features</strong> to unlock senior-level roles</div>
+          <button onclick="goScreen('s4')" style="padding:10px 22px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);font-weight:700;font-size:13px;cursor:pointer">Continue Learning →</button>
+        </div>
+      </div>
+      <div class="jobs-sidebar-panel">
+        <div class="jobs-mascot">
+          <span class="jm-robot">🤖</span>
+          <p><strong style="color:#00b4d8">ARIA's Job Tip:</strong> Your JavaScript skills already match 24 open roles in Singapore! Complete the React module to unlock 15 more high-paying positions.</p>
+          <div class="jm-tip">💡 "Add your IBM badges to LinkedIn for 3x more recruiter views!"</div>
+        </div>
+        <div class="jsp-card">
+          <h3>📊 Your Skill Match</h3>
+          <div class="skill-match-item"><div class="smi-label">JavaScript</div><div class="smi-bar"><div class="smi-fill" style="width:80%"></div></div><div class="smi-pct">80%</div></div>
+          <div class="skill-match-item"><div class="smi-label">HTML/CSS</div><div class="smi-bar"><div class="smi-fill" style="width:100%"></div></div><div class="smi-pct">100%</div></div>
+          <div class="skill-match-item"><div class="smi-label">React</div><div class="smi-bar"><div class="smi-fill" style="width:30%"></div></div><div class="smi-pct">30%</div></div>
+          <div class="skill-match-item"><div class="smi-label">SQL</div><div class="smi-bar"><div class="smi-fill" style="width:20%"></div></div><div class="smi-pct">20%</div></div>
+          <div style="font-size:12px;color:var(--text3);margin-top:10px;border-top:1px solid var(--border);padding-top:10px">Complete more courses to improve match scores and unlock higher-paying roles.</div>
+        </div>
+        <div class="jsp-card">
+          <h3>🔔 Job Alerts</h3>
+          <div class="alert-item"><span class="alert-label">Frontend Developer</span><div class="alert-toggle"></div></div>
+          <div class="alert-item"><span class="alert-label">Full-Stack Engineer</span><div class="alert-toggle"></div></div>
+          <div class="alert-item"><span class="alert-label">Web Developer</span><div class="alert-toggle" style="background:var(--border)"></div></div>
+          <div style="font-size:12px;color:var(--text3);margin-top:10px">We'll email you when new matching jobs appear.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROTO BAR -->
+<div class="proto-bar">
+  <span class="proto-bar-label">📱 SCREENS</span>
+  <button class="proto-btn current" id="pb0" onclick="goScreen('s0')">① Login/Signup</button>
+  <button class="proto-btn" id="pb1" onclick="goScreen('s1')">② Onboarding</button>
+  <button class="proto-btn" id="pb2" onclick="goScreen('s2')">③ Pathways</button>
+  <button class="proto-btn" id="pb3" onclick="goScreen('s3')">④ Dashboard</button>
+  <button class="proto-btn" id="pb4" onclick="goScreen('s4')">⑤ Course View</button>
+  <button class="proto-btn" id="pb5" onclick="goScreen('s5')">⑥ Quiz Win!</button>
+  <button class="proto-btn" id="pb6" onclick="goScreen('s6')">⑦ Job Board</button>
+</div>
+
+<script>
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  const map = {s0:'pb0',s1:'pb1',s2:'pb2',s3:'pb3',s4:'pb4',s5:'pb5',s6:'pb6'};
+  document.querySelectorAll('.proto-btn').forEach(b => b.classList.remove('current'));
+  if(map[id]) document.getElementById(map[id]).classList.add('current');
+}
+function goOBPage(n) {
+  document.querySelectorAll('[id^="ob-page-"]').forEach(p => p.style.display='none');
+  document.getElementById('ob-page-'+n).style.display='block';
+  const stepEls = document.querySelectorAll('.ob-step');
+  stepEls.forEach((el,i) => {
+    if(i === 0) return;
+    const stepN = i + 1;
+    el.classList.remove('active','done');
+    if(stepN < n+1) el.classList.add('done');
+    else if(stepN === n+1) el.classList.add('active');
+  });
+}
+function toggleChip(el) { el.classList.toggle('selected'); }
+function switchTab(tab) {
+  document.getElementById('tab-signup').classList.toggle('active', tab==='signup');
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('form-signup').style.display = tab==='signup'?'block':'none';
+  document.getElementById('form-login').style.display = tab==='login'?'block':'none';
+}
+
+/* ════════════════════════════════════════
+   ARIA TUTORIAL ENGINE
+════════════════════════════════════════ */
+const tourSteps = [
+  {
+    id: null,
+    icon: '🤖',
+    label: 'Welcome',
+    spotlightIcon: '🤖',
+    spotlightName: "Hi, I'm ARIA!",
+    spotlightDesc: "Your AI learning companion",
+    msg: `<strong>Hey Alex! 👋 Welcome to SkillsBuild+!</strong><br><br>I'm <strong>ARIA</strong> — your personal AI learning assistant. I'm going to give you a quick tour of the platform so you feel right at home.<br><br>This will only take about a minute. Let's go! 🚀`
+  },
+  {
+    id: 'tour-pathway',
+    icon: '🎯',
+    label: 'Pathways',
+    spotlightIcon: '🎯',
+    spotlightName: 'Your Learning Pathways',
+    spotlightDesc: 'Personalised routes to your dream job',
+    msg: `<strong>These are your personalised pathways</strong> — I built them based on your interests and career goals!<br><br>Each pathway is a <span class="highlight-tag">📚 structured course sequence</span> that takes you from beginner to job-ready. You can see:<br><br>• How well it matches you (96% ⭐)<br>• Which IBM certifications you'll earn 🏆<br>• Exactly what jobs it prepares you for 💼<br>• Expected salary range 💰<br><br>Pick the one that excites you most and hit <strong>Start Pathway</strong>!`
+  },
+  {
+    id: 'tour-dashboard',
+    icon: '🏠',
+    label: 'Dashboard',
+    spotlightIcon: '🏠',
+    spotlightName: 'Your Dashboard',
+    spotlightDesc: 'Your learning home base',
+    msg: `Your <strong>Dashboard</strong> is the first thing you'll see after logging in every day 🏠<br><br>From here you can:<br><br>• <span class="highlight-tag">▶ Resume</span> any course right where you left off<br>• Track your <strong>XP points</strong> ⭐ and <strong>daily streak</strong> 🔥<br>• See your <strong>badges earned</strong> and what's next 🏆<br>• Get <strong>job matches</strong> based on your current skills 💼<br><br>The more you learn, the more personalised it gets!`
+  },
+  {
+    id: 'tour-courses',
+    icon: '📚',
+    label: 'Courses',
+    spotlightIcon: '📚',
+    spotlightName: 'Courses',
+    spotlightDesc: '500+ IBM-certified courses',
+    msg: `<strong>Courses</strong> are where the magic happens 📚<br><br>Every course has:<br><br>• 📹 <strong>Video lessons</strong> you can watch at your own pace<br>• 🧩 <strong>Quizzes</strong> to test your understanding<br>• 🛠️ <strong>Hands-on projects</strong> to build your portfolio<br><br>And the best part — <strong>I'll be with you the whole time!</strong> I sit in a panel on the right side of every lesson, ready to explain concepts, give examples, or just cheer you on 🎉`
+  },
+  {
+    id: 'tour-badges',
+    icon: '🏆',
+    label: 'Badges',
+    spotlightIcon: '🏆',
+    spotlightName: 'Badges & Certifications',
+    spotlightDesc: 'IBM-recognised credentials',
+    msg: `After completing each course, you'll earn an official <strong>IBM digital badge</strong> 🏆<br><br>These are <em>real, verifiable credentials</em> that employers recognise. Here's why they matter:<br><br>• 🔗 Share them directly to your <strong>LinkedIn profile</strong><br>• 📄 Add them to your <strong>resume / CV</strong><br>• 🎯 They show up in recruiter searches on LinkedIn<br><br>Students with IBM badges get <strong>3× more recruiter views</strong> on average. Start earning from your very first course!`
+  },
+  {
+    id: 'tour-jobs',
+    icon: '💼',
+    label: 'Job Board',
+    spotlightIcon: '💼',
+    spotlightName: 'Job Board',
+    spotlightDesc: 'Real jobs matched to your skills',
+    msg: `This is one of my favourite features — the <strong>Live Job Board</strong> 💼<br><br>It pulls <em>real job listings</em> from <span class="highlight-tag">🔵 LinkedIn</span> <span class="highlight-tag">🇸🇬 MyCareersFuture</span> and <span class="highlight-tag">📊 Glassdoor</span> and matches them to your <strong>current skill level</strong>.<br><br>As you complete more courses, more jobs unlock! You'll always know exactly <em>which course to take next</em> to qualify for a role you want. 🎯<br><br>You can also set <strong>job alerts</strong> so I'll notify you the moment a new matching role appears.`
+  },
+  {
+    id: null,
+    icon: '🤖',
+    label: 'Ask ARIA',
+    spotlightIcon: '💬',
+    spotlightName: 'Ask ARIA — Anytime',
+    spotlightDesc: 'I\'m always here to help',
+    msg: `Finally — <strong>you can ask me anything, anytime!</strong> 💬<br><br>Unlike the old SkillsBuild chatbot, I actually understand your questions. You can ask me things like:<br><br>• <em>"What's the difference between React and Vue?"</em><br>• <em>"Which course should I do next?"</em><br>• <em>"Am I ready to apply for this job?"</em><br>• <em>"Can you quiz me on what I just learned?"</em><br><br>I'm available on every page — just look for the 🤖 icon. I'm always online and always happy to help!`
+  }
+];
+
+let currentTourStep = 0;
+
+function initTour() {
+  // Build pills
+  const pillsEl = document.getElementById('atpPills');
+  pillsEl.innerHTML = '';
+  tourSteps.forEach((_, i) => {
+    const pill = document.createElement('div');
+    pill.className = 'atp-pill' + (i === 0 ? ' active' : '');
+    pill.onclick = () => jumpTourStep(i);
+    pillsEl.appendChild(pill);
+  });
+  // Build message bubbles
+  const msgsEl = document.getElementById('atpMessages');
+  msgsEl.innerHTML = '';
+  tourSteps.forEach((step, i) => {
+    const bub = document.createElement('div');
+    bub.className = 'atp-bubble' + (i === 0 ? ' visible active-msg' : '');
+    bub.id = 'atpBubble' + i;
+    bub.innerHTML = step.msg;
+    msgsEl.appendChild(bub);
+  });
+  renderTourStep(0);
+}
+
+function renderTourStep(idx) {
+  const step = tourSteps[idx];
+  const total = tourSteps.length;
+
+  // Progress bar
+  document.getElementById('atpFill').style.width = (((idx + 1) / total) * 100) + '%';
+  document.getElementById('atpCount').textContent = `Step ${idx + 1} of ${total}`;
+
+  // Pills
+  document.querySelectorAll('.atp-pill').forEach((p, i) => {
+    p.classList.remove('active', 'done');
+    if (i < idx) p.classList.add('done');
+    else if (i === idx) p.classList.add('active');
+  });
+
+  // Spotlight
+  const spotlight = document.getElementById('atpSpotlight');
+  if (step.spotlightName) {
+    spotlight.classList.add('visible');
+    document.getElementById('atpSpotlightIcon').textContent = step.spotlightIcon;
+    document.getElementById('atpSpotlightName').textContent = step.spotlightName;
+    document.getElementById('atpSpotlightDesc').textContent = step.spotlightDesc;
+  } else {
+    spotlight.classList.remove('visible');
+  }
+
+  // Highlight targets — remove all first
+  document.querySelectorAll('.tour-target').forEach(el => el.classList.remove('highlighted'));
+  if (step.id) {
+    const target = document.getElementById(step.id);
+    if (target) {
+      target.classList.add('highlighted');
+      // Smooth scroll to target
+      setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+    }
+  }
+
+  // Messages — show all up to current
+  document.querySelectorAll('.atp-bubble').forEach((b, i) => {
+    b.classList.remove('active-msg');
+    if (i <= idx) {
+      b.classList.add('visible');
+      if (i === idx) b.classList.add('active-msg');
+    }
+  });
+
+  // Scroll messages to bottom
+  const msgs = document.getElementById('atpMessages');
+  setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 100);
+
+  // Buttons
+  const prevBtn = document.getElementById('atpPrev');
+  const nextBtn = document.getElementById('atpNext');
+  const doneBtn = document.getElementById('atpDone');
+  const completeEl = document.getElementById('atpComplete');
+
+  prevBtn.style.display = idx > 0 ? 'block' : 'none';
+
+  if (idx === total - 1) {
+    nextBtn.style.display = 'none';
+    doneBtn.style.display = 'block';
+    completeEl.classList.add('visible');
+  } else {
+    nextBtn.style.display = 'block';
+    doneBtn.style.display = 'none';
+    completeEl.classList.remove('visible');
+    nextBtn.textContent = idx === total - 2 ? 'Last Step →' : 'Next →';
+  }
+}
+
+function tourNext() {
+  if (currentTourStep < tourSteps.length - 1) {
+    currentTourStep++;
+    renderTourStep(currentTourStep);
+  }
+}
+
+function tourPrev() {
+  if (currentTourStep > 0) {
+    currentTourStep--;
+    renderTourStep(currentTourStep);
+  }
+}
+
+function jumpTourStep(idx) {
+  currentTourStep = idx;
+  renderTourStep(currentTourStep);
+}
+
+function skipTour() {
+  document.querySelectorAll('.tour-target').forEach(el => el.classList.remove('highlighted'));
+  // Jump to complete state
+  currentTourStep = tourSteps.length - 1;
+  renderTourStep(currentTourStep);
+  document.getElementById('atpMessages').scrollTop = 999999;
+}
+
+function atpAsk() {
+  const input = document.getElementById('atpAskInput');
+  const q = input.value.trim();
+  if (!q) return;
+  const msgs = document.getElementById('atpMessages');
+  // User bubble
+  const userBub = document.createElement('div');
+  userBub.className = 'atp-bubble visible';
+  userBub.style.cssText = 'background:rgba(15,98,254,0.25);border-color:rgba(15,98,254,0.4);border-radius:14px 4px 14px 14px;align-self:flex-end;color:#c8deff;margin-left:20px;';
+  userBub.textContent = q;
+  msgs.appendChild(userBub);
+  input.value = '';
+
+  // ARIA reply after short delay
+  setTimeout(() => {
+    const replies = [
+      `Great question! <strong>Let me help with that.</strong> Based on what I know about your learning profile, here's what I'd suggest — keep working through the pathway steps and ask me again once you've explored a bit more! 😊`,
+      `I love that curiosity! 🤩 That's exactly the kind of question I'm here for. The short answer is: it depends on your goals. Since you're interested in <strong>Full-Stack Development</strong>, I'd recommend starting there and we'll figure out the rest together!`,
+      `<strong>That's a great thing to think about!</strong> The best way to find out is to try — start with the Full-Stack pathway and I'll guide you every step of the way. You've got this! 💪`,
+    ];
+    const ariaBub = document.createElement('div');
+    ariaBub.className = 'atp-bubble visible active-msg';
+    ariaBub.innerHTML = `<strong>🤖 ARIA:</strong> ` + replies[Math.floor(Math.random() * replies.length)];
+    msgs.appendChild(ariaBub);
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 800);
+
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// Auto-init tour when s2 becomes visible
+const origGoScreen = goScreen;
+window.goScreen = function(id) {
+  origGoScreen(id);
+  if (id === 's2') {
+    setTimeout(() => {
+      currentTourStep = 0;
+      initTour();
+    }, 300);
+  }
+};
+</script>
+</body>
+</html>
